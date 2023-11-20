@@ -1,4 +1,6 @@
-# もっと! 地下鉄 大名古屋 (More More Subway! Dai-Nagoya)
+<div align="center">
+<img src="./Others/logo.png" width="70%">
+</div>
 
 ## 開発環境
 
