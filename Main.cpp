@@ -1,4 +1,5 @@
 ﻿#include "DxLib.h"
+#include "Common.h"
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
 	int key[256];
@@ -32,8 +33,25 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	}
 	int controlBuffer;
 
+	Fps fps;
+	Game game = {
+		0,		// mode
+		0,		// status
+		0,		// count
+		0		// clock
+	};
+
 	while (ScreenFlip() == 0 && ProcessMessage() == 0 && ClearDrawScreen() == 0) {
-		DrawPixel(320, 240, GetColor(255, 255, 255));
+		fps.Update();
+		ClearDrawScreen();
+		// TODO: ここにメインプログラムを書く
+		game.count++;
+		game.clock++;
+		if (game.clock >= fps.Get()) {
+			game.clock = 0;
+		}
+		ScreenFlip();
+		fps.Wait();
 	}
 	DxLib_End();
 	return 0; 
