@@ -4,7 +4,9 @@
 
 ## 開発環境
 
-Microsoft Visual Studio Community 2022
+- Windows 10 / 11
+- Microsoft Visual Studio Community 2022
+- OpenMPT 1.30
 
 ## クレジット
 
@@ -13,6 +15,10 @@ Microsoft Visual Studio Community 2022
 - 荒川 奏良
 
 ### グラフィック
+
+- 荒川 奏良
+
+### サウンド
 
 - 荒川 奏良
 
