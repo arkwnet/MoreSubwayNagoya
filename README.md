@@ -6,6 +6,8 @@
 
 - Windows 10 / 11
 - Microsoft Visual Studio Community 2022
+- Metasequoia 4
+- Adobe Illustrator 2024
 - OpenMPT 1.30
 
 ## クレジット
