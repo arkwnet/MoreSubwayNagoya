@@ -66,6 +66,11 @@ typedef struct {
 	int count;
 } BrakePressure;
 
+typedef struct {
+	bool exist;
+	int handle;
+} TObject;
+
 static const int PAD_INPUT[7] = {
 	PAD_INPUT_DOWN, PAD_INPUT_LEFT, PAD_INPUT_RIGHT, PAD_INPUT_UP,
 	PAD_INPUT_1, PAD_INPUT_2, PAD_INPUT_3,
