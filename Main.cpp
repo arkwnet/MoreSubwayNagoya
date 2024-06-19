@@ -1,10 +1,11 @@
 ﻿#include "DxLib.h"
 #include "Common.h"
+#include "Control.h"
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
 	int key[256];
 	bool isJoypad = false;
-	int joypad[7];
+	int joypad[8];
 	int screenWidth = 1366;
 	int screenHeight = 768;
 	VECTOR camera;
@@ -44,9 +45,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		0		// clock
 	};
 
-	while (ScreenFlip() == 0 && ProcessMessage() == 0 && ClearDrawScreen() == 0) {
+	while (ProcessMessage() == 0) {
 		fps.Update();
 		ClearDrawScreen();
+		GetKey(key);
+		GetJoypad(joypad, isJoypad);
 		switch (game.mode) {
 			case -1:
 				game.count = -10;
@@ -68,9 +71,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 				if (game.count >= 30 && game.count < 120) {
 					DrawGraph(screenWidth / 2 - 301, screenHeight / 2 - 110, backgroundHandle[0], FALSE);
 				}
-				// if (game.count < 105 && (key[KEY_INPUT_SPACE] == 1 || joypad[PAD_3] == 1)) {
-				// 	game.count = 105;
-				// }
+				if (game.count < 105 && (key[KEY_INPUT_SPACE] == 1 || joypad[PAD_3] == 1)) {
+					game.count = 105;
+				}
 				if (game.count == 180) {
 					game.count = -10;
 					game.mode = 1;
