@@ -2,6 +2,7 @@
 #include "DxLib.h"
 #include "Common.h"
 #include "Control.h"
+#include "Title.h"
 #include "TObject.h"
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
@@ -70,21 +71,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 				game.mode = 0;
 				break;
 			case 0:
-				SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 				if (game.count < 0) {
 					backgroundHandle[0] = LoadGraph(L"Assets\\Image\\Arakawa.png");
-					// soundHandle[0] = LoadSoundMem(L"Assets\\Sound\\Decide.wav");
 					game.count = 0;
 				}
-				if (game.count >= 30 && game.count < 45) {
-					SetDrawBlendMode(DX_BLENDMODE_ALPHA, (game.count - 30) * (255 / 15));
-				}
-				if (game.count >= 105 && game.count < 120) {
-					SetDrawBlendMode(DX_BLENDMODE_ALPHA, 255 - ((game.count - 105) * (255 / 15)));
-				}
-				if (game.count >= 30 && game.count < 120) {
-					DrawGraph(screenWidth / 2 - 301, screenHeight / 2 - 110, backgroundHandle[0], FALSE);
-				}
+				DrawArakawaLogo(game, backgroundHandle[0], screenWidth, screenHeight);
 				if (game.count < 105 && (key[KEY_INPUT_SPACE] == 1 || joypad[PAD_3] == 1)) {
 					game.count = 105;
 				}
