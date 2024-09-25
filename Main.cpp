@@ -1,6 +1,8 @@
-﻿#include "DxLib.h"
+﻿#include <math.h>
+#include "DxLib.h"
 #include "Common.h"
 #include "Control.h"
+#include "TObject.h"
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
 	int key[256];
@@ -9,10 +11,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	int screenWidth = 1366;
 	int screenHeight = 768;
 	VECTOR camera;
-	float cameraZLength, cameraZDistance, cameraAngle;
-	int backgroundHandle[2];
-	int spriteHandle[16];
-	int soundHandle[16];
+	float cameraZLength = 1.0f;
+	float cameraZDistance = 0.0f;
+	float cameraAngle = 0.0f;
+	Position rail;
+	Position point;
+	Navi navi;
 
 	ChangeWindowMode(TRUE);
 	SetUseCharCodeFormat(DX_CHARCODEFORMAT_UTF8);
@@ -27,6 +31,16 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	if (DxLib_Init() == -1) {
 		return -1;
 	}
+
+	int backgroundHandle[2];
+	int spriteHandle[16];
+	int soundHandle[16];
+
+	float mRailPosition[2000][2];
+	int mRailHandle[4][200];
+	int mPlatformHandle[2][100];
+	static const int C_DISTANCE = sizeof(mRailHandle[0]) / sizeof(mRailHandle[0][0]);
+	const int mRailHandleBase = MV1LoadModel(L"Assets\\Model\\Rail\\1067.mqo");
 
 	int runDistance, drawDistance;
 	int pad, padX, padY;
@@ -77,6 +91,61 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 				if (game.count == 180) {
 					game.count = -10;
 					game.mode = 1;
+				}
+				break;
+			case 100:
+				if (game.status == 0) {
+					rail = { 0.0f, 8.0f, 0.0f, 0.0f };
+					point = { 0.0f, 8.0f, 0.0f, 0.0f };
+					navi = { 9, 0, { 10, 59, 20 }, 0, 455, 1 };
+					camera = VGet(0.0f, 9.6f, 0.0f);
+					cameraAngle = 0.0f;
+					runDistance = 0;
+					drawDistance = 0;
+					for (int i = 0; i < C_DISTANCE; i++) {
+						mRailHandle[0][i] = MV1DuplicateModel(mRailHandleBase);
+						MV1SetPosition(mRailHandle[0][i], VGet(rail.x, rail.y, rail.z));
+						MV1SetRotationXYZ(mRailHandle[0][i], VGet(0.0f, rail.a, 0.0f));
+						rail.x += sin(rail.a);
+						rail.z += cos(rail.a);
+						mRailPosition[drawDistance][0] = rail.z;
+						mRailPosition[drawDistance][1] = rail.a;
+						drawDistance++;
+					}
+					game.status = 1;
+				} else if (game.status == 1) {
+					SetCameraNearFar(0.1f, 1000.0f);
+					double cameraMove = navi.speed * 1000 / 60 / 60 / fps.Get();
+					point.x += cameraMove * sin(point.a);
+					point.z += cameraMove * cos(point.a);
+					camera.x += cameraMove * sin(point.a);
+					camera.z += cameraMove * cos(point.a);
+					cameraZDistance += cameraMove * cos(point.a);
+					point.a = mRailPosition[runDistance][1];
+					if (mRailPosition[runDistance][0] <= camera.z) {
+						cameraZDistance = 0.0f;
+						cameraZLength = cos(point.a);
+						runDistance++;
+						mRailPosition[drawDistance][0] = rail.z;
+						mRailPosition[drawDistance][1] = rail.a;
+						MV1SetPosition(mRailHandle[0][drawDistance % C_DISTANCE], VGet(rail.x, rail.y, rail.z));
+						MV1SetRotationXYZ(mRailHandle[0][drawDistance % C_DISTANCE], VGet(0.0f, rail.a, 0.0f));
+						rail.x += sin(rail.a);
+						rail.z += cos(rail.a);
+						drawDistance++;
+						navi.distance--;
+					}
+					if (fabsf(point.a - cameraAngle) > 0.001f) {
+						if (point.a < cameraAngle) {
+							cameraAngle -= fabsf(point.a - cameraAngle) / 10.0f;
+						} else if (point.a > cameraAngle) {
+							cameraAngle += fabsf(point.a - cameraAngle) / 10.0f;
+						}
+					} else {
+						cameraAngle = point.a;
+					}
+					SetCameraPositionAndAngle(camera, 0.0f, cameraAngle, 0.0f);
+					Draw3DRail(mRailHandle, mPlatformHandle);
 				}
 				break;
 		}
