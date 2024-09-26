@@ -3,6 +3,7 @@
 #include "Common.h"
 #include "Control.h"
 #include "Graphic.h"
+#include "Sound.h"
 #include "Title.h"
 #include "TObject.h"
 
@@ -105,9 +106,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 						mRailPosition[drawDistance][1] = rail.a;
 						drawDistance++;
 					}
+					soundHandle[0] = LoadSoundMem(L"Assets\\Sound\\Inverter.wav");
+					PlaySoundMem(soundHandle[0], DX_PLAYTYPE_LOOP);
+					ChangeVolumeSoundMem(0, soundHandle[0]);
 					game.status = 1;
 				} else if (game.status == 1) {
 					DrawFillBox(0, 0, screenWidth, screenHeight, COLOR_BLACK);
+					ControlVVVFSound(navi, soundHandle[0]);
 					SetCameraNearFar(0.1f, 1000.0f);
 					double cameraMove = navi.speed * 1000 / 60 / 60 / fps.Get();
 					point.x += cameraMove * sin(point.a);
