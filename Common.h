@@ -83,4 +83,8 @@ static const int PAD_1 = 4;
 static const int PAD_2 = 5;
 static const int PAD_3 = 6;
 
+static const int COLOR_BLACK = GetColor(0, 0, 0);
+static const int COLOR_WHITE = GetColor(255, 255, 255);
+static const int FONT_DEBUG = CreateFontToHandle(L"ＭＳ ゴシック", 20, -1, -1);
+
 #endif

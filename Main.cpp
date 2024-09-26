@@ -2,6 +2,7 @@
 #include "DxLib.h"
 #include "Common.h"
 #include "Control.h"
+#include "Graphic.h"
 #include "Title.h"
 #include "TObject.h"
 
@@ -18,6 +19,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	Position rail;
 	Position point;
 	Navi navi;
+	Train train = { 120, 3.0, 3.5, 4.0, 8, 5, {0, 20, 40, 80, 115, 150, 185, 260, 300} };
 
 	ChangeWindowMode(TRUE);
 	SetUseCharCodeFormat(DX_CHARCODEFORMAT_UTF8);
@@ -88,7 +90,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 				if (game.status == 0) {
 					rail = { 0.0f, 8.0f, 0.0f, 0.0f };
 					point = { 0.0f, 8.0f, 0.0f, 0.0f };
-					navi = { 9, 0, { 10, 59, 20 }, 0, 455, 1 };
+					navi = { 9, 0, { 10, 59, 20 }, 0, 800, 1 };
 					camera = VGet(0.0f, 9.6f, 0.0f);
 					cameraAngle = 0.0f;
 					runDistance = 0;
@@ -105,6 +107,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 					}
 					game.status = 1;
 				} else if (game.status == 1) {
+					DrawFillBox(0, 0, screenWidth, screenHeight, COLOR_BLACK);
 					SetCameraNearFar(0.1f, 1000.0f);
 					double cameraMove = navi.speed * 1000 / 60 / 60 / fps.Get();
 					point.x += cameraMove * sin(point.a);
@@ -137,6 +140,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 					}
 					SetCameraPositionAndAngle(camera, 0.0f, cameraAngle, 0.0f);
 					Draw3DRail(mRailHandle, mPlatformHandle);
+					navi = UpdateNotch(key, joypad, navi, train);
+					navi = UpdateSpeed(navi, train, fps);
+					DebugInformation(navi);
 				}
 				break;
 		}
