@@ -20,9 +20,13 @@
 
 - 荒川 奏良
 
-### サウンド
+### ミュージック
 
 - 荒川 奏良
+
+### サウンドエフェクト
+
+- 効果音ラボ (https://soundeffect-lab.info/)
 
 ### スペシャルサンクス
 
@@ -32,4 +36,4 @@
 本プログラム及び本プログラムに含まれるオープンソースソフトウェアのライセンスについて、詳しくは同梱の `LICENSE.txt` ファイルをご覧ください。
 
 MIT License  
-Copyright (c) 2023 Sora Arakawa
+Copyright (c) 2023, 2024 Sora Arakawa
