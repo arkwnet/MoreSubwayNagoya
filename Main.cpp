@@ -42,9 +42,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	float mRailPosition[2000][2];
 	int mRailHandle[4][200];
+	int mTunnelHandle[200];
 	int mPlatformHandle[2][100];
 	static const int C_DISTANCE = sizeof(mRailHandle[0]) / sizeof(mRailHandle[0][0]);
 	const int mRailHandleBase = MV1LoadModel(L"Assets\\Model\\Rail\\1067.mqo");
+	const int mTunnelHandleBase = MV1LoadModel(L"Assets\\Model\\Tunnel\\Sakuradori1.mqo");
 
 	int runDistance, drawDistance;
 	int pad, padX, padY;
@@ -92,7 +94,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 					rail = { 0.0f, 8.0f, 0.0f, 0.0f };
 					point = { 0.0f, 8.0f, 0.0f, 0.0f };
 					navi = { 9, 0, { 10, 59, 20 }, 0, 800, 1 };
-					camera = VGet(0.0f, 9.6f, 0.0f);
+					camera = VGet(0.0f, 10.0f, 0.0f);
 					cameraAngle = 0.0f;
 					runDistance = 0;
 					drawDistance = 0;
@@ -100,6 +102,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 						mRailHandle[0][i] = MV1DuplicateModel(mRailHandleBase);
 						MV1SetPosition(mRailHandle[0][i], VGet(rail.x, rail.y, rail.z));
 						MV1SetRotationXYZ(mRailHandle[0][i], VGet(0.0f, rail.a, 0.0f));
+						mTunnelHandle[i] = MV1DuplicateModel(mTunnelHandleBase);
+						MV1SetPosition(mTunnelHandle[i], VGet(rail.x, rail.y + 2.5f, rail.z));
+						MV1SetRotationXYZ(mTunnelHandle[i], VGet(0.0f, rail.a, 0.0f));
 						rail.x += sin(rail.a);
 						rail.z += cos(rail.a);
 						mRailPosition[drawDistance][0] = rail.z;
@@ -129,6 +134,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 						mRailPosition[drawDistance][1] = rail.a;
 						MV1SetPosition(mRailHandle[0][drawDistance % C_DISTANCE], VGet(rail.x, rail.y, rail.z));
 						MV1SetRotationXYZ(mRailHandle[0][drawDistance % C_DISTANCE], VGet(0.0f, rail.a, 0.0f));
+						MV1SetPosition(mTunnelHandle[drawDistance % C_DISTANCE], VGet(rail.x, rail.y + 2.5f, rail.z));
+						MV1SetRotationXYZ(mTunnelHandle[drawDistance % C_DISTANCE], VGet(0.0f, rail.a, 0.0f));
 						rail.x += sin(rail.a);
 						rail.z += cos(rail.a);
 						drawDistance++;
@@ -144,7 +151,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 						cameraAngle = point.a;
 					}
 					SetCameraPositionAndAngle(camera, 0.0f, cameraAngle, 0.0f);
-					Draw3DRail(mRailHandle, mPlatformHandle);
+					Draw3DRail(mRailHandle, mTunnelHandle, mPlatformHandle);
 					navi = UpdateNotch(key, joypad, navi, train);
 					navi = UpdateSpeed(navi, train, fps);
 					DebugInformation(navi);
