@@ -1,4 +1,7 @@
-﻿float GetRailAngle(int i, float a, int section) {
+﻿#include "DxLib.h"
+#include "Common.h"
+
+float GetRailAngle(int i, float a, int section) {
 	switch (section) {
 	case 2620:
 		if (i >= 0 && i < 127) { a -= 0.0005f; }
@@ -7,4 +10,14 @@
 		break;
 	}
 	return a;
+}
+
+Navi UpdateATCSpeed(Navi navi, int distance) {
+	if (distance == 230) {
+		navi.atc = 75;
+	}
+	if (distance == 700) {
+		navi.atc = 55;
+	}
+	return navi;
 }

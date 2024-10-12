@@ -40,6 +40,7 @@ typedef struct {
 	int p;
 	Time time;
 	double speed;
+	int atc;
 	int distance;
 	int section;
 } Navi;
