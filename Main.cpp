@@ -3,6 +3,7 @@
 #include "Common.h"
 #include "Control.h"
 #include "Graphic.h"
+#include "Map.h"
 #include "Sound.h"
 #include "Title.h"
 #include "TObject.h"
@@ -94,13 +95,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 				if (game.status == 0) {
 					rail = { 0.0f, 8.0f, 0.0f, 0.0f };
 					point = { 0.0f, 8.0f, 0.0f, 0.0f };
-					navi = { 9, 0, { 10, 59, 20 }, 0, 800, 1 };
-					camera = VGet(0.0f, 10.0f, 0.0f);
+					navi = { 9, 0, { 10, 59, 20 }, 0, 895, 2620 };
+					camera = VGet(0.0f, 10.1f, 0.0f);
 					cameraAngle = 0.0f;
 					runDistance = 0;
 					drawDistance = 0;
 					for (int i = 0; i < C_DISTANCE; i++) {
 						mRailHandle[0][i] = MV1DuplicateModel(mRailHandleBase);
+						rail.a = GetRailAngle(i, rail.a, navi.section);
 						MV1SetPosition(mRailHandle[0][i], VGet(rail.x, rail.y, rail.z));
 						MV1SetRotationXYZ(mRailHandle[0][i], VGet(0.0f, rail.a, 0.0f));
 						mTunnelHandle[i] = MV1DuplicateModel(mTunnelHandleBase);
@@ -131,6 +133,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 						cameraZDistance = 0.0f;
 						cameraZLength = cos(point.a);
 						runDistance++;
+						rail.a = GetRailAngle(drawDistance, rail.a, navi.section);
 						mRailPosition[drawDistance][0] = rail.z;
 						mRailPosition[drawDistance][1] = rail.a;
 						MV1SetPosition(mRailHandle[0][drawDistance % C_DISTANCE], VGet(rail.x, rail.y, rail.z));
@@ -139,10 +142,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 						MV1SetRotationXYZ(mTunnelHandle[drawDistance % C_DISTANCE], VGet(0.0f, rail.a, 0.0f));
 						rail.x += sin(rail.a);
 						rail.z += cos(rail.a);
-						if (drawDistance >= 675 && drawDistance <= 800) {
-							mPlatformHandle[0][drawDistance - 675] = MV1DuplicateModel(mPlatformHandleBase);
-							MV1SetPosition(mPlatformHandle[0][drawDistance - 675], VGet(rail.x + 4.5f, rail.y, rail.z));
-							MV1SetRotationXYZ(mPlatformHandle[0][drawDistance - 675], VGet(0.0f, rail.a, 0.0f));
+						if (drawDistance >= 775 && drawDistance <= 900) {
+							mPlatformHandle[0][drawDistance - 775] = MV1DuplicateModel(mPlatformHandleBase);
+							MV1SetPosition(mPlatformHandle[0][drawDistance - 775], VGet(rail.x + 4.5f, rail.y, rail.z));
+							MV1SetRotationXYZ(mPlatformHandle[0][drawDistance - 775], VGet(0.0f, rail.a, 0.0f));
 						}
 						drawDistance++;
 						navi.distance--;
