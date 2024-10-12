@@ -38,7 +38,8 @@ typedef struct {
 typedef struct {
 	int b;
 	int p;
-	Time time;
+	int time;
+	int arrtime;
 	double speed;
 	int atc;
 	int distance;

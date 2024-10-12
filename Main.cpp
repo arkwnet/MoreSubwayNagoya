@@ -95,7 +95,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 				if (game.status == 0) {
 					rail = { 0.0f, 8.0f, 0.0f, 0.0f };
 					point = { 0.0f, 8.0f, 0.0f, 0.0f };
-					navi = { 9, 0, { 10, 59, 20 }, 0, 55, 895, 2620 };
+					navi = { 9, 0, 0, 80, 0, 55, 895, 2620 };
 					camera = VGet(0.0f, 10.1f, 0.0f);
 					cameraAngle = 0.0f;
 					runDistance = 0;
@@ -159,6 +159,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 						}
 					} else {
 						cameraAngle = point.a;
+					}
+					if (game.clock == 0) {
+						navi.time++;
 					}
 					SetCameraPositionAndAngle(camera, 0.0f, cameraAngle, 0.0f);
 					Draw3DRail(mRailHandle, mTunnelHandle, mPlatformHandle);
