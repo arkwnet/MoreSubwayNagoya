@@ -43,10 +43,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	float mRailPosition[2000][2];
 	int mRailHandle[4][200];
 	int mTunnelHandle[200];
-	int mPlatformHandle[2][100];
+	int mPlatformHandle[2][200];
 	static const int C_DISTANCE = sizeof(mRailHandle[0]) / sizeof(mRailHandle[0][0]);
 	const int mRailHandleBase = MV1LoadModel(L"Assets\\Model\\Rail\\1067.mqo");
 	const int mTunnelHandleBase = MV1LoadModel(L"Assets\\Model\\Tunnel\\Sakuradori1.mqo");
+	const int mPlatformHandleBase = MV1LoadModel(L"Assets\\Model\\Station\\Platform\\620.mqo");
 
 	int runDistance, drawDistance;
 	int pad, padX, padY;
@@ -138,6 +139,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 						MV1SetRotationXYZ(mTunnelHandle[drawDistance % C_DISTANCE], VGet(0.0f, rail.a, 0.0f));
 						rail.x += sin(rail.a);
 						rail.z += cos(rail.a);
+						if (drawDistance >= 675 && drawDistance <= 800) {
+							mPlatformHandle[0][drawDistance - 675] = MV1DuplicateModel(mPlatformHandleBase);
+							MV1SetPosition(mPlatformHandle[0][drawDistance - 675], VGet(rail.x + 4.5f, rail.y, rail.z));
+							MV1SetRotationXYZ(mPlatformHandle[0][drawDistance - 675], VGet(0.0f, rail.a, 0.0f));
+						}
 						drawDistance++;
 						navi.distance--;
 					}
