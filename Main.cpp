@@ -37,7 +37,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		return -1;
 	}
 
+	int bufferHandle = MakeScreen(1920, 1080, TRUE);
 	int backgroundHandle[2];
+	backgroundHandle[1] = LoadGraph(L"Assets\\Image\\Cab.png");
 	int spriteHandle[16];
 	int soundHandle[16];
 
@@ -171,6 +173,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 					navi = UpdateNotch(key, joypad, navi, train);
 					navi = UpdateSpeed(navi, train, fps);
 					DebugInformation(navi);
+					DrawCab(bufferHandle, backgroundHandle[1], navi);
+					DrawExtendGraph(0, 0, screenWidth, screenHeight, bufferHandle, TRUE);
 				}
 				break;
 		}
