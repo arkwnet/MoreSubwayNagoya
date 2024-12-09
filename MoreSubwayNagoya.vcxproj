@@ -144,6 +144,7 @@
     <ClCompile Include="Graphic.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Map.cpp" />
+    <ClCompile Include="Math.cpp" />
     <ClCompile Include="Sound.cpp" />
     <ClCompile Include="Title.cpp" />
     <ClCompile Include="TObject.cpp" />
@@ -153,6 +154,7 @@
     <ClInclude Include="Control.h" />
     <ClInclude Include="Graphic.h" />
     <ClInclude Include="Map.h" />
+    <ClInclude Include="Math.h" />
     <ClInclude Include="Sound.h" />
     <ClInclude Include="Title.h" />
     <ClInclude Include="TObject.h" />
