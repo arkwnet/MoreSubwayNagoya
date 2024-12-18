@@ -22,6 +22,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	Position point;
 	Navi navi;
 	Train train = { 120, 3.0, 3.5, 4.0, 8, 5, {0, 20, 40, 80, 115, 150, 185, 260, 300} };
+	BrakePressure brakePressure = { 0, 0, 0 };
+	BrakePressure current = { 0, 0, 0 };
 
 	ChangeWindowMode(TRUE);
 	SetUseCharCodeFormat(DX_CHARCODEFORMAT_UTF8);
@@ -41,6 +43,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	int backgroundHandle[2];
 	backgroundHandle[1] = LoadGraph(L"Assets\\Image\\Cab.png");
 	int spriteHandle[16];
+	spriteHandle[0] = LoadGraph(L"Assets\\Image\\GameMap.png");
 	int soundHandle[16];
 
 	float mRailPosition[2000][2];
@@ -172,8 +175,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 					Draw3DRail(mRailHandle, mTunnelHandle, mPlatformHandle);
 					navi = UpdateNotch(key, joypad, navi, train);
 					navi = UpdateSpeed(navi, train, fps);
+					brakePressure = UpdateBrakePressure(brakePressure, navi, train);
+					current = UpdateCurrent(current, navi, train);
 					DebugInformation(navi);
-					DrawCab(bufferHandle, backgroundHandle[1], navi);
+					DrawCab(bufferHandle, backgroundHandle[1], spriteHandle[0], navi, brakePressure.out, current.out);
 					DrawExtendGraph(0, 0, screenWidth, screenHeight, bufferHandle, TRUE);
 				}
 				break;
@@ -187,5 +192,5 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		fps.Wait();
 	}
 	DxLib_End();
-	return 0; 
+	return 0;
 }
