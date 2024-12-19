@@ -44,6 +44,7 @@ typedef struct {
 	int atc;
 	int distance;
 	int section;
+	int score;
 } Navi;
 
 typedef struct {
@@ -87,6 +88,5 @@ static const int PAD_3 = 6;
 
 static const int COLOR_BLACK = GetColor(0, 0, 0);
 static const int COLOR_WHITE = GetColor(255, 255, 255);
-static const int FONT_DEBUG = CreateFontToHandle(L"ＭＳ ゴシック", 20, -1, -1);
 
 #endif

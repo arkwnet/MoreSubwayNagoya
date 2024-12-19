@@ -44,6 +44,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	backgroundHandle[1] = LoadGraph(L"Assets\\Image\\Cab.png");
 	int spriteHandle[16];
 	spriteHandle[0] = LoadGraph(L"Assets\\Image\\GameMap.png");
+	spriteHandle[1] = LoadGraph(L"Assets\\Image\\Tablet.png");
 	int soundHandle[16];
 
 	float mRailPosition[2000][2];
@@ -101,7 +102,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 				if (game.status == 0) {
 					rail = { 0.0f, 0.0f, 0.0f, 0.0f };
 					point = { 0.0f, 0.0f, 0.0f, 0.0f };
-					navi = { 9, 0, 0, 80, 0, 55, 895, 2620 };
+					navi = { 9, 0, 0, 80, 0, 55, 895, 2620, 100 };
 					camera = VGet(0.0f, 2.7f, 0.0f);
 					cameraAngle = 0.0f;
 					runDistance = 0;
@@ -178,7 +179,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 					brakePressure = UpdateBrakePressure(brakePressure, navi, train);
 					current = UpdateCurrent(current, navi, train);
 					DebugInformation(navi);
-					DrawCab(bufferHandle, backgroundHandle[1], spriteHandle[0], navi, brakePressure.out, current.out);
+					DrawCab(bufferHandle, backgroundHandle[1], spriteHandle[0], spriteHandle[1], navi, brakePressure.out, current.out);
 					DrawExtendGraph(0, 0, screenWidth, screenHeight, bufferHandle, TRUE);
 				}
 				break;
