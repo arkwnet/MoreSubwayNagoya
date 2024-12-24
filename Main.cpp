@@ -178,8 +178,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 					navi = UpdateSpeed(navi, train, fps);
 					brakePressure = UpdateBrakePressure(brakePressure, navi, train);
 					current = UpdateCurrent(current, navi, train);
-					DebugInformation(navi);
-					DrawCab(bufferHandle, backgroundHandle[1], spriteHandle[0], spriteHandle[1], navi, brakePressure.out, current.out);
+					DrawCab(bufferHandle, backgroundHandle[1], spriteHandle[0], spriteHandle[1], navi, train, brakePressure.out, current.out);
 					DrawExtendGraph(0, 0, screenWidth, screenHeight, bufferHandle, TRUE);
 				}
 				break;
