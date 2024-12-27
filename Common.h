@@ -5,8 +5,8 @@ class Fps {
 	int mStartTime;
 	int mCount;
 	float mFps;
-	static const int N = 30;
-	static const int FPS = 30;
+	static const int N = 60;
+	static const int FPS = 60;
 	public:
 		Fps();
 		bool Update();

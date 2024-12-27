@@ -93,7 +93,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 				if (game.count < 105 && (key[KEY_INPUT_SPACE] == 1 || joypad[PAD_3] == 1)) {
 					game.count = 105;
 				}
-				if (game.count == 180) {
+				if (game.count == 300) {
 					game.count = -10;
 					game.mode = 1;
 				}
