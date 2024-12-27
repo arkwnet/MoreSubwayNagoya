@@ -122,6 +122,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 						drawDistance++;
 					}
 					soundHandle[0] = LoadSoundMem(L"Assets\\Sound\\Inverter.wav");
+					soundHandle[14] = LoadSoundMem(L"Assets\\Sound\\Announcement\\62200.wav");
+					soundHandle[15] = LoadSoundMem(L"Assets\\Sound\\Announcement\\62201.wav");
 					PlaySoundMem(soundHandle[0], DX_PLAYTYPE_LOOP);
 					ChangeVolumeSoundMem(0, soundHandle[0]);
 					game.status = 1;
@@ -152,6 +154,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 							MV1SetRotationXYZ(mPlatformHandle[0][drawDistance - 775], VGet(0.0f, rail.a, 0.0f));
 							MV1DeleteModel(mTunnelHandle[drawDistance % C_DISTANCE]);
 							mTunnelHandle[drawDistance % C_DISTANCE] = MV1DuplicateModel(mStationHandleBase);
+						}
+						if (navi.distance == 850) {
+							PlaySoundMem(soundHandle[14], DX_PLAYTYPE_BACK);
+						}
+						if (navi.distance == 200) {
+							PlaySoundMem(soundHandle[15], DX_PLAYTYPE_BACK);
 						}
 						MV1SetPosition(mTunnelHandle[drawDistance % C_DISTANCE], VGet(rail.x, rail.y + 4.5f, rail.z));
 						MV1SetRotationXYZ(mTunnelHandle[drawDistance % C_DISTANCE], VGet(0.0f, rail.a, 0.0f));
