@@ -90,12 +90,32 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 					game.count = 0;
 				}
 				DrawArakawaLogo(game, backgroundHandle[0], screenWidth, screenHeight);
-				if (game.count < 105 && (key[KEY_INPUT_SPACE] == 1 || joypad[PAD_3] == 1)) {
-					game.count = 105;
+				if (game.count < 210 && (key[KEY_INPUT_SPACE] == 1 || joypad[PAD_3] == 1)) {
+					game.count = 210;
 				}
 				if (game.count == 300) {
 					game.count = -10;
 					game.mode = 1;
+				}
+				break;
+			case 1:
+				if (game.count < 0) {
+					backgroundHandle[0] = LoadGraph(L"Assets\\Image\\Title.png");
+					SetDrawScreen(bufferHandle);
+					DrawGraph(0, 0, backgroundHandle[0], FALSE);
+					SetFont(L"ＭＳ ゴシック", 28, 6);
+					DrawString((1920 - GetDrawStringWidth(VERSION, -1)) / 2, 940, VERSION, GetColor(255, 255, 255));
+					DrawString((1920 - GetDrawStringWidth(COPYRIGHT, -1)) / 2, 974, COPYRIGHT, GetColor(255, 255, 255));
+					SetDrawScreen(DX_SCREEN_BACK);
+					SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+					game.count = 0;
+				} else {
+					DrawExtendGraph(0, 0, screenWidth, screenHeight, bufferHandle, FALSE);
+				}
+				if (key[KEY_INPUT_SPACE] == 1 || joypad[PAD_3] == 1) {
+					game.count = -10;
+					game.status = 0;
+					game.mode = 100;
 				}
 				break;
 			case 100:

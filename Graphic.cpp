@@ -5,6 +5,14 @@
 #include "Math.h"
 #include "Graphic.h"
 
+void SetFont(const wchar_t* name, int size, int thick) {
+	ChangeFont(name);
+	SetFontSize(size);
+	SetFontThickness(thick);
+	ChangeFontType(DX_FONTTYPE_ANTIALIASING_8X8);
+	return;
+}
+
 void DrawCab(int bufferHandle, int backgroundHandle, int spriteHandle, int tabletHandle, Navi navi, Train train, int pressure, int current) {
 	SetDrawScreen(bufferHandle);
 	ClearDrawScreen();
