@@ -12,8 +12,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	int key[256];
 	bool isJoypad = false;
 	int joypad[8];
-	int screenWidth = 1366;
-	int screenHeight = 768;
+	int screenWidth, screenHeight;
 	VECTOR camera;
 	float cameraZLength = 1.0f;
 	float cameraZDistance = 0.0f;
@@ -25,17 +24,28 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	BrakePressure brakePressure = { 0, 0, 0 };
 	BrakePressure current = { 0, 0, 0 };
 
-	ChangeWindowMode(TRUE);
 	SetUseCharCodeFormat(DX_CHARCODEFORMAT_UTF8);
-	ChangeWindowMode(TRUE);
 	SetFullScreenResolutionMode(DX_FSRESOLUTIONMODE_NATIVE);
 	SetUseDirect3DVersion(DX_DIRECT3D_11);
 	SetUse3DFlag(TRUE);
 	SetUseZBuffer3D(TRUE);
 	SetWindowIconID(100);
 	SetMainWindowText(L"もっと! 地下鉄 大名古屋");
-	SetWindowSize(screenWidth, screenHeight);
+	FILE* fp;
+	errno_t error;
+	error = fopen_s(&fp, "fullscreen", "r");
+	if (fp == NULL) {
+		ChangeWindowMode(TRUE);
+		screenWidth = 1366;
+		screenHeight = 768;
+	} else {
+		fclose(fp);
+		ChangeWindowMode(FALSE);
+		screenWidth = 1920;
+		screenHeight = 1080;
+	}
 	SetGraphMode(screenWidth, screenHeight, 32);
+	SetWindowSize(screenWidth, screenHeight);
 	if (DxLib_Init() == -1) {
 		return -1;
 	}
@@ -77,6 +87,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		SetJoypadDeadZone(DX_INPUT_PAD1, 0.0);
 	}
 	int controlBuffer;
+	bool status = true;
 	bool mclean = false;
 
 	Fps fps;
@@ -87,7 +98,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		0		// clock
 	};
 
-	while (ProcessMessage() == 0) {
+	while (ProcessMessage() == 0 && status == true) {
 		fps.Update();
 		ClearDrawScreen();
 		GetKey(key);
@@ -110,6 +121,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 					game.count = -10;
 					game.mode = 1;
 				}
+				if (key[KEY_INPUT_ESCAPE] == 1) {
+					status = false;
+				}
 				break;
 			case 1:
 				if (game.count < 0) {
@@ -130,6 +144,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 					game.status = 0;
 					game.clock = 0;
 					game.mode = 100;
+				}
+				if (key[KEY_INPUT_ESCAPE] == 1) {
+					status = false;
 				}
 				break;
 			case 100:
