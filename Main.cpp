@@ -32,6 +32,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	SetUseDirect3DVersion(DX_DIRECT3D_11);
 	SetUse3DFlag(TRUE);
 	SetUseZBuffer3D(TRUE);
+	SetWindowIconID(100);
 	SetMainWindowText(L"もっと! 地下鉄 大名古屋");
 	SetWindowSize(screenWidth, screenHeight);
 	SetGraphMode(screenWidth, screenHeight, 32);
