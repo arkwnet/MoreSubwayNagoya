@@ -122,7 +122,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 				if (game.status == 0) {
 					rail = { 0.0f, 0.0f, 0.0f, 0.0f };
 					point = { 0.0f, 0.0f, 0.0f, 0.0f };
-					navi = { 9, 0, 0, 80, 0, 55, 895, 2620, 100 };
+					navi = { 9, 0, -25, 80, 0, 55, 895, 2620, 100 };
 					camera = VGet(0.0f, 2.7f, 0.0f);
 					cameraAngle = 0.0f;
 					runDistance = 0;
@@ -145,6 +145,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 					soundHandle[1] = LoadSoundMem(L"Assets\\Sound\\Notch.wav");
 					soundHandle[2] = LoadSoundMem(L"Assets\\Sound\\BrakeDecompress.wav");
 					soundHandle[3] = LoadSoundMem(L"Assets\\Sound\\BrakeStop.wav");
+					soundHandle[9] = LoadSoundMem(L"Assets\\Sound\\Buzzer.wav");
+					soundHandle[10] = LoadSoundMem(L"Assets\\Sound\\DoorClose.wav");
+					soundHandle[12] = LoadSoundMem(L"Assets\\Sound\\Announcement\\End.wav");
+					soundHandle[13] = LoadSoundMem(L"Assets\\Sound\\Announcement\\62210.wav");
 					soundHandle[14] = LoadSoundMem(L"Assets\\Sound\\Announcement\\62200.wav");
 					soundHandle[15] = LoadSoundMem(L"Assets\\Sound\\Announcement\\62201.wav");
 					PlaySoundMem(soundHandle[0], DX_PLAYTYPE_LOOP);
@@ -205,6 +209,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 					}
 					if (game.clock == 0) {
 						navi.time++;
+						if (navi.time == -24) {
+							PlaySoundMem(soundHandle[13], DX_PLAYTYPE_BACK);
+						}
+						if (navi.time == -12) {
+							PlaySoundMem(soundHandle[10], DX_PLAYTYPE_BACK);
+						}
+						if (navi.time == -1) {
+							PlaySoundMem(soundHandle[9], DX_PLAYTYPE_BACK);
+						}
 					}
 					SetCameraPositionAndAngle(camera, 0.0f, cameraAngle, 0.0f);
 					Draw3DRail(mRailHandle, mTunnelHandle, mPlatformHandle);
