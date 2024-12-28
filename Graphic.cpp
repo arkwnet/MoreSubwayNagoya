@@ -19,6 +19,7 @@ void DrawCab(int bufferHandle, int backgroundHandle, int spriteHandle, int table
 	DrawGraph(0, 0, backgroundHandle, TRUE);
 	double radSpeed = DegreeToRadian(210.0 + 2.5 * navi.speed);
 	DrawLineAA(795, 818, 795 + 76 * sin(radSpeed), 818 - 76 * cos(radSpeed), GetColor(0, 0, 0), 6.0f);
+	DrawRectGraph(730, 762, 0, 146, 130, 115, spriteHandle, TRUE);
 	double radPressure = DegreeToRadian(206.0 + 0.25 * pressure);
 	DrawRectRotaGraph2(472, 862, 134, 150, 32, 134, 16, 93, 1.0, radPressure, spriteHandle, TRUE);
 	DrawRectGraph(454, 851, 0, 265, 36, 36, spriteHandle, TRUE);

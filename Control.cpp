@@ -51,6 +51,9 @@ Navi UpdateSpeed(Navi navi, Train train, Fps fps) {
 	if (navi.speed >= 0.1) {
 		navi.speed -= 0.005;
 	}
+	if (navi.speed >= 80) {
+		navi.speed = 80;
+	}
 	return navi;
 }
 
