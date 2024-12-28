@@ -142,10 +142,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 						drawDistance++;
 					}
 					soundHandle[0] = LoadSoundMem(L"Assets\\Sound\\Inverter.wav");
+					soundHandle[1] = LoadSoundMem(L"Assets\\Sound\\Notch.wav");
+					soundHandle[2] = LoadSoundMem(L"Assets\\Sound\\BrakeDecompress.wav");
+					soundHandle[3] = LoadSoundMem(L"Assets\\Sound\\BrakeStop.wav");
 					soundHandle[14] = LoadSoundMem(L"Assets\\Sound\\Announcement\\62200.wav");
 					soundHandle[15] = LoadSoundMem(L"Assets\\Sound\\Announcement\\62201.wav");
 					PlaySoundMem(soundHandle[0], DX_PLAYTYPE_LOOP);
 					ChangeVolumeSoundMem(0, soundHandle[0]);
+					PlaySoundMem(soundHandle[3], DX_PLAYTYPE_LOOP);
+					ChangeVolumeSoundMem(0, soundHandle[3]);
 					game.status = 1;
 				} else if (game.status == 1) {
 					DrawFillBox(0, 0, screenWidth, screenHeight, COLOR_BLACK);
@@ -200,9 +205,21 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 					if (game.clock == 0) {
 						navi.time++;
 					}
+					// ブレーキ音
+					if (navi.b >= 1 && navi.speed > 0 && navi.speed <= 4) {
+						if (navi.speed > 3) {
+							ChangeVolumeSoundMem(255 * (4 - navi.speed), soundHandle[3]);
+						} else if (navi.speed <= 1) {
+							ChangeVolumeSoundMem(255 * navi.speed, soundHandle[3]);
+						} else {
+							ChangeVolumeSoundMem(255, soundHandle[3]);
+						}
+					} else {
+						ChangeVolumeSoundMem(0, soundHandle[3]);
+					}
 					SetCameraPositionAndAngle(camera, 0.0f, cameraAngle, 0.0f);
 					Draw3DRail(mRailHandle, mTunnelHandle, mPlatformHandle);
-					navi = UpdateNotch(key, joypad, navi, train);
+					navi = UpdateNotch(key, joypad, navi, train, soundHandle[1], soundHandle[2]);
 					navi = UpdateSpeed(navi, train, fps);
 					brakePressure = UpdateBrakePressure(brakePressure, navi, train);
 					current = UpdateCurrent(current, navi, train);

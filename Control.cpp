@@ -2,25 +2,30 @@
 #include "Common.h"
 #include "Control.h"
 
-Navi UpdateNotch(int key[256], int joypad[8], Navi navi, Train train) {
+Navi UpdateNotch(int key[256], int joypad[8], Navi navi, Train train, int soundHandleNotch, int soundHandleBrake) {
 	if (key[KEY_INPUT_LEFT] == 1 || joypad[PAD_LEFT] == 1) {
 		if (navi.b > 0) {
 			navi.b--;
+			PlaySoundMem(soundHandleNotch, DX_PLAYTYPE_BACK);
+			PlaySoundMem(soundHandleBrake, DX_PLAYTYPE_BACK);
 		}
 	}
 	if (key[KEY_INPUT_RIGHT] == 1 || joypad[PAD_RIGHT] == 1) {
 		if (navi.b < train.b + 1) {
 			navi.b++;
+			PlaySoundMem(soundHandleNotch, DX_PLAYTYPE_BACK);
 		}
 	}
 	if (key[KEY_INPUT_UP] == 1 || joypad[PAD_UP] == 1) {
 		if (navi.p > 0) {
 			navi.p--;
+			PlaySoundMem(soundHandleNotch, DX_PLAYTYPE_BACK);
 		}
 	}
 	if (key[KEY_INPUT_DOWN] == 1 || joypad[PAD_DOWN] == 1) {
 		if (navi.p < train.p) {
 			navi.p++;
+			PlaySoundMem(soundHandleNotch, DX_PLAYTYPE_BACK);
 		}
 	}
 	return navi;
