@@ -154,7 +154,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 					game.status = 1;
 				} else if (game.status == 1) {
 					DrawFillBox(0, 0, screenWidth, screenHeight, COLOR_BLACK);
-					ControlVVVFSound(navi, soundHandle[0]);
+					ControlVVVFSound(soundHandle[0], navi, current.out);
+					ControlBrakeSound(soundHandle[3], navi);
 					SetCameraNearFar(0.1f, 1000.0f);
 					double cameraMove = navi.speed * 1000 / 60 / 60 / fps.Get();
 					point.x += cameraMove * sin(point.a);
@@ -204,18 +205,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 					}
 					if (game.clock == 0) {
 						navi.time++;
-					}
-					// ブレーキ音
-					if (navi.b >= 1 && navi.speed > 0 && navi.speed <= 4) {
-						if (navi.speed > 3) {
-							ChangeVolumeSoundMem(255 * (4 - navi.speed), soundHandle[3]);
-						} else if (navi.speed <= 1) {
-							ChangeVolumeSoundMem(255 * navi.speed, soundHandle[3]);
-						} else {
-							ChangeVolumeSoundMem(255, soundHandle[3]);
-						}
-					} else {
-						ChangeVolumeSoundMem(0, soundHandle[3]);
 					}
 					SetCameraPositionAndAngle(camera, 0.0f, cameraAngle, 0.0f);
 					Draw3DRail(mRailHandle, mTunnelHandle, mPlatformHandle);

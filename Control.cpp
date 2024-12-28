@@ -7,7 +7,9 @@ Navi UpdateNotch(int key[256], int joypad[8], Navi navi, Train train, int soundH
 		if (navi.b > 0) {
 			navi.b--;
 			PlaySoundMem(soundHandleNotch, DX_PLAYTYPE_BACK);
-			PlaySoundMem(soundHandleBrake, DX_PLAYTYPE_BACK);
+			if (navi.b <= 2 || navi.speed <= 6) {
+				PlaySoundMem(soundHandleBrake, DX_PLAYTYPE_BACK);
+			}
 		}
 	}
 	if (key[KEY_INPUT_RIGHT] == 1 || joypad[PAD_RIGHT] == 1) {
@@ -88,7 +90,7 @@ BrakePressure UpdateBrakePressure(BrakePressure brakePressure, Navi navi, Train 
 
 BrakePressure UpdateCurrent(BrakePressure current, Navi navi, Train train) {
 	if (navi.b >= 1 && navi.b <= train.b) {
-		if (navi.speed >= 6 && train.bp[navi.b] > 80 && current.count >= 120) {
+		if (navi.speed >= 6 && current.count >= 120) {
 			current.in = (1.0 / train.b) * navi.b * 500.0;
 		} else {
 			current.in = 0;

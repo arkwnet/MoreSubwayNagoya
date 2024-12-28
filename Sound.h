@@ -1,6 +1,7 @@
 ﻿#ifndef _sound_h
 #define _sound_h
 
-void ControlVVVFSound(Navi navi, int soundHandle);
+void ControlVVVFSound(int soundHandle, Navi navi, int current);
+void ControlBrakeSound(int soundHandle, Navi navi);
 
 #endif
