@@ -258,6 +258,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 						if (navi.speed >= 76) {
 							navi.score -= navi.speed - 75;
 						}
+						if (navi.speed >= 1 && (navi.time <= -2 || navi.b == train.b + 1)) {
+							navi.score -= 2;
+						}
 					}
 					if (navi.speed == 0 && navi.distance <= 5) {
 						navi.score -= abs(navi.distance);
@@ -300,9 +303,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		if (mclean == true) {
 			for (int i = 0; i < 200; i++) {
 				MV1DeleteModel(mRailHandle[0][i]);
-				if (i < 100) {
-					MV1DeleteModel(mPlatformHandle[0][i]);
-				}
+				MV1DeleteModel(mPlatformHandle[0][i]);
 			}
 			mclean = false;
 		}
