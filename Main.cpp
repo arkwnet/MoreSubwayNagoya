@@ -46,6 +46,17 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	spriteHandle[0] = LoadGraph(L"Assets\\Image\\GameMap.png");
 	spriteHandle[1] = LoadGraph(L"Assets\\Image\\Tablet.png");
 	int soundHandle[16];
+	soundHandle[0] = LoadSoundMem(L"Assets\\Sound\\Inverter.wav");
+	soundHandle[1] = LoadSoundMem(L"Assets\\Sound\\Notch.wav");
+	soundHandle[2] = LoadSoundMem(L"Assets\\Sound\\BrakeDecompress.wav");
+	soundHandle[3] = LoadSoundMem(L"Assets\\Sound\\BrakeStop.wav");
+	soundHandle[9] = LoadSoundMem(L"Assets\\Sound\\Buzzer.wav");
+	soundHandle[10] = LoadSoundMem(L"Assets\\Sound\\DoorOpen.wav");
+	soundHandle[11] = LoadSoundMem(L"Assets\\Sound\\DoorClose.wav");
+	soundHandle[12] = LoadSoundMem(L"Assets\\Sound\\Announcement\\End.wav");
+	soundHandle[13] = LoadSoundMem(L"Assets\\Sound\\Announcement\\62210.wav");
+	soundHandle[14] = LoadSoundMem(L"Assets\\Sound\\Announcement\\62200.wav");
+	soundHandle[15] = LoadSoundMem(L"Assets\\Sound\\Announcement\\62201.wav");
 
 	float mRailPosition[2000][2];
 	int mRailHandle[4][200];
@@ -65,6 +76,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		SetJoypadDeadZone(DX_INPUT_PAD1, 0.0);
 	}
 	int controlBuffer;
+	bool mclean = false;
 
 	Fps fps;
 	Game game = {
@@ -115,6 +127,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 				if (key[KEY_INPUT_SPACE] == 1 || joypad[PAD_3] == 1) {
 					game.count = -10;
 					game.status = 0;
+					game.clock = 0;
 					game.mode = 100;
 				}
 				break;
@@ -141,16 +154,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 						mRailPosition[drawDistance][1] = rail.a;
 						drawDistance++;
 					}
-					soundHandle[0] = LoadSoundMem(L"Assets\\Sound\\Inverter.wav");
-					soundHandle[1] = LoadSoundMem(L"Assets\\Sound\\Notch.wav");
-					soundHandle[2] = LoadSoundMem(L"Assets\\Sound\\BrakeDecompress.wav");
-					soundHandle[3] = LoadSoundMem(L"Assets\\Sound\\BrakeStop.wav");
-					soundHandle[9] = LoadSoundMem(L"Assets\\Sound\\Buzzer.wav");
-					soundHandle[10] = LoadSoundMem(L"Assets\\Sound\\DoorClose.wav");
-					soundHandle[12] = LoadSoundMem(L"Assets\\Sound\\Announcement\\End.wav");
-					soundHandle[13] = LoadSoundMem(L"Assets\\Sound\\Announcement\\62210.wav");
-					soundHandle[14] = LoadSoundMem(L"Assets\\Sound\\Announcement\\62200.wav");
-					soundHandle[15] = LoadSoundMem(L"Assets\\Sound\\Announcement\\62201.wav");
 					PlaySoundMem(soundHandle[0], DX_PLAYTYPE_LOOP);
 					ChangeVolumeSoundMem(0, soundHandle[0]);
 					PlaySoundMem(soundHandle[3], DX_PLAYTYPE_LOOP);
@@ -213,11 +216,24 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 							PlaySoundMem(soundHandle[13], DX_PLAYTYPE_BACK);
 						}
 						if (navi.time == -12) {
-							PlaySoundMem(soundHandle[10], DX_PLAYTYPE_BACK);
+							PlaySoundMem(soundHandle[11], DX_PLAYTYPE_BACK);
 						}
 						if (navi.time == -1) {
 							PlaySoundMem(soundHandle[9], DX_PLAYTYPE_BACK);
 						}
+						if (navi.speed >= 76) {
+							navi.score -= navi.speed - 75;
+						}
+					}
+					if (navi.speed == 0 && navi.distance <= 5) {
+						navi.score -= abs(navi.distance);
+						navi.score -= abs(navi.arrtime - navi.time);
+						navi.score -= (navi.b - 1) * 2;
+						game.status = 2;
+						game.count = 0;
+					}
+					if (navi.score < 0) {
+						navi.score = 0;
 					}
 					SetCameraPositionAndAngle(camera, 0.0f, cameraAngle, 0.0f);
 					Draw3DRail(mRailHandle, mTunnelHandle, mPlatformHandle);
@@ -227,8 +243,34 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 					current = UpdateCurrent(current, navi, train);
 					DrawCab(bufferHandle, backgroundHandle[1], spriteHandle[0], spriteHandle[1], navi, train, brakePressure.out, current.out);
 					DrawExtendGraph(0, 0, screenWidth, screenHeight, bufferHandle, TRUE);
+				} else if (game.status == 2) {
+					DrawFillBox(0, 0, screenWidth, screenHeight, COLOR_BLACK);
+					SetCameraNearFar(0.1f, 1000.0f);
+					SetCameraPositionAndAngle(camera, 0.0f, cameraAngle, 0.0f);
+					Draw3DRail(mRailHandle, mTunnelHandle, mPlatformHandle);
+					DrawCab(bufferHandle, backgroundHandle[1], spriteHandle[0], spriteHandle[1], navi, train, brakePressure.out, current.out);
+					DrawExtendGraph(0, 0, screenWidth, screenHeight, bufferHandle, TRUE);
+					if (game.count == 60) {
+						PlaySoundMem(soundHandle[10], DX_PLAYTYPE_BACK);
+					}
+					if (game.count == 310) {
+						PlaySoundMem(soundHandle[12], DX_PLAYTYPE_BACK);
+					}
+					if (game.count == 490) {
+						mclean = true;
+						game.mode = -1;
+					}
 				}
 				break;
+		}
+		if (mclean == true) {
+			for (int i = 0; i < 200; i++) {
+				MV1DeleteModel(mRailHandle[0][i]);
+				if (i < 100) {
+					MV1DeleteModel(mPlatformHandle[0][i]);
+				}
+			}
+			mclean = false;
 		}
 		game.count++;
 		game.clock++;
