@@ -26,6 +26,9 @@ void DrawCab(int bufferHandle, int backgroundHandle, int spriteHandle, int table
 	double radCurrent = DegreeToRadian(230.0 + 0.26 * current);
 	DrawLineAA(245, 868, 245 + 64 * sin(radCurrent), 868 - 64 * cos(radCurrent), GetColor(0, 0, 0), 5.0f);
 	DrawRectGraph(227, 851, 0, 265, 36, 36, spriteHandle, TRUE);
+	if (navi.time >= -2) {
+		DrawRectGraph(851, 982, 0, 300, 34, 34, spriteHandle, TRUE);
+	}
 	int tx = 1123;
 	int ty = 685;
 	DrawGraph(tx, ty, tabletHandle, FALSE);
