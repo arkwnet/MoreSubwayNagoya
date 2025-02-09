@@ -18,3 +18,8 @@ indent_size = unset
 end_of_line = unset
 trim_trailing_whitespace = unset
 insert_final_newline = unset
+
+[*.{html,css}]
+indent_style = space
+indent_size = 2
+charset = utf-8-bom
