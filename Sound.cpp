@@ -40,3 +40,24 @@ void ControlBrakeSound(int soundHandle, Navi navi) {
 		ChangeVolumeSoundMem(0, soundHandle);
 	}
 }
+
+void ControlTunnelSound(int soundHandle, Navi navi) {
+	SetFrequencySoundMem(5000 + (200 * navi.speed), soundHandle);
+	if (navi.speed <= 5) {
+		ChangeVolumeSoundMem(0, soundHandle);
+	} else {
+		if (navi.distance <= 120) {
+			if (navi.speed <= 25) {
+				ChangeVolumeSoundMem((180 / 20) * navi.speed, soundHandle);
+			} else {
+				ChangeVolumeSoundMem(180, soundHandle);
+			}
+		} else {
+			if (navi.speed <= 25) {
+				ChangeVolumeSoundMem((255 / 20) * navi.speed, soundHandle);
+			} else {
+				ChangeVolumeSoundMem(255, soundHandle);
+			}
+		}
+	}
+}
