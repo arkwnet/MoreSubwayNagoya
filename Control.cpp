@@ -62,8 +62,8 @@ BrakePressure UpdateBrakePressure(BrakePressure brakePressure, Navi navi, Train 
 		brakePressure.in = 0;
 		brakePressure.count = 0;
 	} else if (navi.b >= 1 && navi.b <= train.b) {
-		if (navi.speed >= 6 && train.bp[navi.b] > 80 && brakePressure.count >= 120) {
-			brakePressure.in = 80;
+		if (navi.speed >= 8 && train.bp[navi.b] > 80 && brakePressure.count >= 120) {
+			brakePressure.in = 60;
 		} else {
 			brakePressure.in = train.bp[navi.b];
 		}
@@ -95,8 +95,8 @@ BrakePressure UpdateBrakePressure(BrakePressure brakePressure, Navi navi, Train 
 
 BrakePressure UpdateCurrent(BrakePressure current, Navi navi, Train train) {
 	if (navi.b >= 1 && navi.b <= train.b) {
-		if (navi.speed >= 6 && current.count >= 120) {
-			current.in = (1.0 / train.b) * navi.b * 500.0;
+		if (navi.speed >= 8 && current.count >= 120) {
+			current.in = (1.0 / train.b) * navi.b * (500.0 * (navi.speed / 80));
 		} else {
 			current.in = 0;
 		}
@@ -104,20 +104,22 @@ BrakePressure UpdateCurrent(BrakePressure current, Navi navi, Train train) {
 			current.count++;
 		}
 	} else if (navi.p >= 1) {
-		current.in = (1.0 / train.p) * navi.p * 600.0;
+		current.in = (1.0 / train.p) * navi.p * 550.0;
 	} else {
 		current.in = 0;
 		current.count = 0;
 	}
 	if (current.in > current.out) {
-		if (abs(current.in - current.out) > 5) {
-			current.out += abs(current.in - current.out) / 20;
+		int diff = abs(current.in - current.out) / 40;
+		if (diff > 1) {
+			current.out += diff;
 		} else {
 			current.out += 1;
 		}
 	} else if (current.in < current.out) {
-		if (abs(current.in - current.out) > 5) {
-			current.out -= abs(current.in - current.out) / 20;
+		int diff = abs(current.in - current.out) / 40;
+		if (diff > 1) {
+			current.out -= diff;
 		} else {
 			current.out -= 1;
 		}
