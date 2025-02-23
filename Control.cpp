@@ -71,17 +71,19 @@ BrakePressure UpdateBrakePressure(BrakePressure brakePressure, Navi navi, Train 
 			brakePressure.count++;
 		}
 	} else if (navi.b >= train.b + 1) {
-		brakePressure.in = 380;
+		brakePressure.in = 360;
 	}
 	if (brakePressure.in > brakePressure.out) {
-		if (abs(brakePressure.in - brakePressure.out) > 5) {
-			brakePressure.out += abs(brakePressure.in - brakePressure.out) / 25;
+		int diff = abs(brakePressure.in - brakePressure.out) / 20;
+		if (diff > 1) {
+			brakePressure.out += diff;
 		} else {
 			brakePressure.out += 1;
 		}
 	} else if (brakePressure.in < brakePressure.out) {
-		if (abs(brakePressure.in - brakePressure.out) > 5) {
-			brakePressure.out -= abs(brakePressure.in - brakePressure.out) / 25;
+		int diff = abs(brakePressure.in - brakePressure.out) / 20;
+		if (diff > 1) {
+			brakePressure.out -= diff;
 		} else {
 			brakePressure.out -= 1;
 		}
