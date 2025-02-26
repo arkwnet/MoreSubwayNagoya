@@ -18,10 +18,8 @@ void ControlVVVFSound(int soundHandle, Navi navi, int current) {
 			}
 		}
 	}
-	if (current <= 50) {
+	if (current <= 10) {
 		ChangeVolumeSoundMem(0, soundHandle);
-	} else if (current > 50 && current <= 80) {
-		ChangeVolumeSoundMem((255 / 30) * (current - 50), soundHandle);
 	} else {
 		ChangeVolumeSoundMem(255, soundHandle);
 	}
