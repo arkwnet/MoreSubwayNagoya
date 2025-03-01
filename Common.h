@@ -90,6 +90,6 @@ static const int COLOR_BLACK = GetColor(0, 0, 0);
 static const int COLOR_WHITE = GetColor(255, 255, 255);
 
 static const wchar_t VERSION[30] = L"Release Build / Version 1.0.0";
-static const wchar_t COPYRIGHT[72] = L"(c) 2023, 2024 Sora Arakawa and others. Licensed under the MIT License.";
+static const wchar_t COPYRIGHT[71] = L"(c) 2023-2025 Sora Arakawa and others. Licensed under the MIT License.";
 
 #endif
