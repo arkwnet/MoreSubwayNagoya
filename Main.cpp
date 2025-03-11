@@ -58,10 +58,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	spriteHandle[1] = LoadGraph(L"Assets\\Image\\Tablet.png");
 	int soundHandle[16];
 	soundHandle[0] = LoadSoundMem(L"Assets\\Sound\\Inverter.wav");
-	soundHandle[1] = LoadSoundMem(L"Assets\\Sound\\Notch.wav");
-	soundHandle[2] = LoadSoundMem(L"Assets\\Sound\\BrakeDecompress.wav");
-	soundHandle[3] = LoadSoundMem(L"Assets\\Sound\\BrakeStop.wav");
-	soundHandle[4] = LoadSoundMem(L"Assets\\Sound\\Tunnel.wav");
+	soundHandle[1] = LoadSoundMem(L"Assets\\Sound\\BrakeDecompress.wav");
+	soundHandle[2] = LoadSoundMem(L"Assets\\Sound\\BrakeStop.wav");
+	soundHandle[3] = LoadSoundMem(L"Assets\\Sound\\Tunnel.wav");
+	soundHandle[4] = LoadSoundMem(L"Assets\\Sound\\Notch1.wav");
+	soundHandle[5] = LoadSoundMem(L"Assets\\Sound\\Notch2.wav");
 	soundHandle[9] = LoadSoundMem(L"Assets\\Sound\\Buzzer.wav");
 	soundHandle[10] = LoadSoundMem(L"Assets\\Sound\\DoorOpen.wav");
 	soundHandle[11] = LoadSoundMem(L"Assets\\Sound\\DoorClose.wav");
@@ -182,16 +183,16 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 					}
 					PlaySoundMem(soundHandle[0], DX_PLAYTYPE_LOOP);
 					ChangeVolumeSoundMem(0, soundHandle[0]);
+					PlaySoundMem(soundHandle[2], DX_PLAYTYPE_LOOP);
+					ChangeVolumeSoundMem(0, soundHandle[2]);
 					PlaySoundMem(soundHandle[3], DX_PLAYTYPE_LOOP);
 					ChangeVolumeSoundMem(0, soundHandle[3]);
-					PlaySoundMem(soundHandle[4], DX_PLAYTYPE_LOOP);
-					ChangeVolumeSoundMem(0, soundHandle[4]);
 					game.status = 1;
 				} else if (game.status == 1) {
 					DrawFillBox(0, 0, screenWidth, screenHeight, COLOR_BLACK);
 					ControlVVVFSound(soundHandle[0], navi, current.out);
-					ControlBrakeSound(soundHandle[3], navi);
-					ControlTunnelSound(soundHandle[4], navi);
+					ControlBrakeSound(soundHandle[2], navi);
+					ControlTunnelSound(soundHandle[3], navi);
 					SetCameraNearFar(0.1f, 1000.0f);
 					double cameraMove = navi.speed * 1000 / 60 / 60 / fps.Get();
 					point.x += cameraMove * sin(point.a);
@@ -278,7 +279,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 					}
 					SetCameraPositionAndAngle(camera, 0.0f, cameraAngle, 0.0f);
 					Draw3DRail(mRailHandle, mTunnelHandle, mPlatformHandle);
-					navi = UpdateNotch(key, joypad, navi, train, soundHandle[1], soundHandle[2]);
+					navi = UpdateNotch(key, joypad, navi, train, soundHandle[4], soundHandle[5], soundHandle[1]);
 					navi = UpdateSpeed(navi, train, fps);
 					brakePressure = UpdateBrakePressure(brakePressure, navi, train);
 					current = UpdateCurrent(current, navi, train);

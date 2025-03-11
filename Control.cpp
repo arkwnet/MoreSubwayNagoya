@@ -2,11 +2,11 @@
 #include "Common.h"
 #include "Control.h"
 
-Navi UpdateNotch(int key[256], int joypad[8], Navi navi, Train train, int soundHandleNotch, int soundHandleBrake) {
+Navi UpdateNotch(int key[256], int joypad[8], Navi navi, Train train, int soundHandleNotch1, int soundHandleNotch2, int soundHandleBrake) {
 	if (key[KEY_INPUT_LEFT] == 1 || joypad[PAD_LEFT] == 1) {
 		if (navi.b > 0) {
 			navi.b--;
-			PlaySoundMem(soundHandleNotch, DX_PLAYTYPE_BACK);
+			PlaySoundMem(soundHandleNotch2, DX_PLAYTYPE_BACK);
 			if (navi.b <= 2 || navi.speed <= 6) {
 				PlaySoundMem(soundHandleBrake, DX_PLAYTYPE_BACK);
 			}
@@ -15,19 +15,19 @@ Navi UpdateNotch(int key[256], int joypad[8], Navi navi, Train train, int soundH
 	if (key[KEY_INPUT_RIGHT] == 1 || joypad[PAD_RIGHT] == 1) {
 		if (navi.b < train.b + 1) {
 			navi.b++;
-			PlaySoundMem(soundHandleNotch, DX_PLAYTYPE_BACK);
+			PlaySoundMem(soundHandleNotch2, DX_PLAYTYPE_BACK);
 		}
 	}
 	if (key[KEY_INPUT_UP] == 1 || joypad[PAD_UP] == 1) {
 		if (navi.p > 0) {
 			navi.p--;
-			PlaySoundMem(soundHandleNotch, DX_PLAYTYPE_BACK);
+			PlaySoundMem(soundHandleNotch1, DX_PLAYTYPE_BACK);
 		}
 	}
 	if (key[KEY_INPUT_DOWN] == 1 || joypad[PAD_DOWN] == 1) {
 		if (navi.p < train.p) {
 			navi.p++;
-			PlaySoundMem(soundHandleNotch, DX_PLAYTYPE_BACK);
+			PlaySoundMem(soundHandleNotch1, DX_PLAYTYPE_BACK);
 		}
 	}
 	return navi;
@@ -71,7 +71,7 @@ BrakePressure UpdateBrakePressure(BrakePressure brakePressure, Navi navi, Train 
 			brakePressure.count++;
 		}
 	} else if (navi.b >= train.b + 1) {
-		brakePressure.in = 360;
+		brakePressure.in = 320;
 	}
 	if (brakePressure.in > brakePressure.out) {
 		double diff = abs(brakePressure.in - brakePressure.out) / 20;
@@ -107,7 +107,7 @@ BrakePressure UpdateCurrent(BrakePressure current, Navi navi, Train train) {
 			current.count++;
 		}
 	} else if (navi.p >= 1) {
-		current.in = (1.0 / train.p) * navi.p * 550.0;
+		current.in = (1.0 / train.p) * navi.p * 600.0;
 	} else {
 		current.in = 0;
 		current.count = 0;
