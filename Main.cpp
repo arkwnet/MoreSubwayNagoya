@@ -20,7 +20,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	Position rail;
 	Position point;
 	Navi navi;
-	Train train = { 120, 3.0, 3.5, 4.0, 8, 5, {0, 40, 70, 100, 130, 180, 200, 230, 260} };
+	Train train = { 120, 3.0, 3.5, 4.0, 8, 5, {0, 50, 80, 110, 140, 170, 200, 230, 260} };
 	BrakePressure brakePressure = { 0, 0, 0 };
 	BrakePressure current = { 0, 0, 0 };
 

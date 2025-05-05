@@ -62,8 +62,8 @@ BrakePressure UpdateBrakePressure(BrakePressure brakePressure, Navi navi, Train 
 		brakePressure.in = 0;
 		brakePressure.count = 0;
 	} else if (navi.b >= 1 && navi.b <= train.b) {
-		if (navi.speed >= 8 && train.bp[navi.b] > 80 && brakePressure.count >= 120) {
-			brakePressure.in = 60;
+		if (navi.speed >= 4 && train.bp[navi.b] > 80 && brakePressure.count >= 120) {
+			brakePressure.in = 50;
 		} else {
 			brakePressure.in = train.bp[navi.b];
 		}
@@ -95,7 +95,7 @@ BrakePressure UpdateBrakePressure(BrakePressure brakePressure, Navi navi, Train 
 
 BrakePressure UpdateCurrent(BrakePressure current, Navi navi, Train train) {
 	if (navi.b >= 1 && navi.b <= train.b) {
-		if (navi.speed >= 8 && current.count >= 120) {
+		if (navi.speed >= 4 && current.count >= 120) {
 			current.in = (1.0 / train.b) * navi.b * (500.0 * (navi.speed / 80));
 			if (current.in < 40) {
 				current.in = 40;
