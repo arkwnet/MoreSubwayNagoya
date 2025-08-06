@@ -155,14 +155,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 				if (game.status == 0) {
 					rail = { 0.0f, 0.0f, 0.0f, 0.0f };
 					point = { 0.0f, 0.0f, 0.0f, 0.0f };
-					navi = { 9, 0, -25, 80, 0, 55, 895, 2620, 100 };
+					navi = { 9, 0, -25, 80, 0, 55, 860, 2620, 100 };
 					camera = VGet(0.0f, 2.7f, 0.0f);
 					cameraAngle = 0.0f;
 					runDistance = 0;
 					drawDistance = 0;
 					for (int i = 0; i < C_DISTANCE; i++) {
 						mRailHandle[0][i] = MV1DuplicateModel(mRailHandleBase);
-						rail.a = GetRailAngle(i, rail.a, navi.section);
+						rail.a = GetRailAngle(i, rail.a);
 						MV1SetPosition(mRailHandle[0][i], VGet(rail.x, rail.y, rail.z));
 						MV1SetRotationXYZ(mRailHandle[0][i], VGet(0.0f, rail.a, 0.0f));
 						if (i <= 10) {
@@ -206,15 +206,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 						cameraZLength = cos(point.a);
 						runDistance++;
 						navi = UpdateATCSpeed(navi, runDistance);
-						rail.a = GetRailAngle(drawDistance, rail.a, navi.section);
+						rail.a = GetRailAngle(drawDistance, rail.a);
 						mRailPosition[drawDistance][0] = rail.z;
 						mRailPosition[drawDistance][1] = rail.a;
 						MV1SetPosition(mRailHandle[0][drawDistance % C_DISTANCE], VGet(rail.x, rail.y, rail.z));
 						MV1SetRotationXYZ(mRailHandle[0][drawDistance % C_DISTANCE], VGet(0.0f, rail.a, 0.0f));
-						if (drawDistance >= 775 && drawDistance <= 900) {
-							mPlatformHandle[0][drawDistance - 775] = MV1DuplicateModel(mPlatformHandleBase);
-							MV1SetPosition(mPlatformHandle[0][drawDistance - 775], VGet(rail.x + 4.5f, rail.y, rail.z));
-							MV1SetRotationXYZ(mPlatformHandle[0][drawDistance - 775], VGet(0.0f, rail.a, 0.0f));
+						if (drawDistance >= 740 && drawDistance <= 865) {
+							mPlatformHandle[0][drawDistance - 740] = MV1DuplicateModel(mPlatformHandleBase);
+							MV1SetPosition(mPlatformHandle[0][drawDistance - 740], VGet(rail.x + 4.5f, rail.y, rail.z));
+							MV1SetRotationXYZ(mPlatformHandle[0][drawDistance - 740], VGet(0.0f, rail.a, 0.0f));
 							MV1DeleteModel(mTunnelHandle[drawDistance % C_DISTANCE]);
 							mTunnelHandle[drawDistance % C_DISTANCE] = MV1DuplicateModel(mStationHandleBase);
 						}
@@ -223,7 +223,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 							MV1DeleteModel(mTunnelHandle[drawDistance % C_DISTANCE]);
 							mTunnelHandle[drawDistance % C_DISTANCE] = MV1DuplicateModel(mTunnelHandleBase);
 						}
-						if (drawDistance >= 975 && drawDistance <= 1100) {
+						if (drawDistance >= 940 && drawDistance <= 1065) {
 							MV1DeleteModel(mTunnelHandle[drawDistance % C_DISTANCE]);
 							mTunnelHandle[drawDistance % C_DISTANCE] = MV1DuplicateModel(mTunnelHandleBase);
 						}
