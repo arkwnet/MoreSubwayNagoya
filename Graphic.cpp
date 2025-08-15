@@ -13,7 +13,7 @@ void SetFont(const wchar_t* name, int size, int thick) {
 	return;
 }
 
-void DrawCab(int bufferHandle, int backgroundHandle, int spriteHandle, int tabletHandle, Navi navi, Train train, int pressure, int current) {
+void DrawCab(int bufferHandle, int backgroundHandle, int spriteHandle, int tabletHandle, int stationHandle, Navi navi, Train train, int pressure, int current) {
 	SetDrawScreen(bufferHandle);
 	ClearDrawScreen();
 	DrawGraph(0, 0, backgroundHandle, TRUE);
@@ -32,6 +32,13 @@ void DrawCab(int bufferHandle, int backgroundHandle, int spriteHandle, int table
 	int tx = 1123;
 	int ty = 685;
 	DrawGraph(tx, ty, tabletHandle, FALSE);
+	if (navi.section == 2620) {
+		DrawRectGraph(tx + 59, ty + 64, 0, 100, 150, 50, stationHandle, TRUE);
+		DrawRectGraph(tx + 379, ty + 64, 0, 50, 150, 50, stationHandle, TRUE);
+	} else if (navi.section == 2619) {
+		DrawRectGraph(tx + 59, ty + 64, 0, 50, 150, 50, stationHandle, TRUE);
+		DrawRectGraph(tx + 379, ty + 64, 0, 0, 150, 50, stationHandle, TRUE);
+	}
 	ChangeFontType(DX_FONTTYPE_ANTIALIASING);
 	ChangeFont(L"Tahoma Bold");
 	SetFontSize(48);

@@ -56,6 +56,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	int spriteHandle[16];
 	spriteHandle[0] = LoadGraph(L"Assets\\Image\\GameMap.png");
 	spriteHandle[1] = LoadGraph(L"Assets\\Image\\Tablet.png");
+	spriteHandle[2] = LoadGraph(L"Assets\\Image\\Station.png");
 	int soundHandle[16];
 	soundHandle[0] = LoadSoundMem(L"Assets\\Sound\\Inverter.wav");
 	soundHandle[1] = LoadSoundMem(L"Assets\\Sound\\BrakeDecompress.wav");
@@ -68,8 +69,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	soundHandle[11] = LoadSoundMem(L"Assets\\Sound\\DoorClose.wav");
 	soundHandle[12] = LoadSoundMem(L"Assets\\Sound\\Announcement\\End.wav");
 	soundHandle[13] = LoadSoundMem(L"Assets\\Sound\\Announcement\\62210.wav");
-	soundHandle[14] = LoadSoundMem(L"Assets\\Sound\\Announcement\\62200.wav");
-	soundHandle[15] = LoadSoundMem(L"Assets\\Sound\\Announcement\\62201.wav");
 
 	float mRailPosition[2000][2];
 	int mRailHandle[4][200];
@@ -81,7 +80,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	const int mStationHandleBase = MV1LoadModel(L"Assets\\Model\\Tunnel\\Sakuradori2.mqo");
 	const int mPlatformHandleBase = MV1LoadModel(L"Assets\\Model\\Station\\Platform\\620.mqo");
 
-	int runDistance, drawDistance;
+	int runDistance, drawDistance, drawStart;
 	int pad, padX, padY;
 	int padNum = GetJoypadNum();
 	if (padNum >= 1) {
@@ -142,6 +141,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 					DrawExtendGraph(0, 0, screenWidth, screenHeight, bufferHandle, FALSE);
 				}
 				if (key[KEY_INPUT_SPACE] == 1 || joypad[PAD_3] == 1) {
+					navi.b = 9;
+					navi.p = 0;
+					navi.section = 2620;
+					navi.score = 100;
 					game.count = -10;
 					game.status = 0;
 					game.clock = 0;
@@ -155,14 +158,33 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 				if (game.status == 0) {
 					rail = { 0.0f, 0.0f, 0.0f, 0.0f };
 					point = { 0.0f, 0.0f, 0.0f, 0.0f };
-					navi = { 9, 0, -25, 80, 0, 55, 860, 2620, 100 };
+					navi.speed = 0.0;
+					navi.atc = 55;
+					if (navi.section == 2620) {
+						navi.time = -25;
+						navi.arrtime = 80;
+						navi.distance = 860;
+						soundHandle[14] = LoadSoundMem(L"Assets\\Sound\\Announcement\\62200.wav");
+						soundHandle[15] = LoadSoundMem(L"Assets\\Sound\\Announcement\\62201.wav");
+					} else if (navi.section == 2619) {
+						navi.time = -13;
+						navi.arrtime = 110;
+						navi.distance = 1370;
+						soundHandle[14] = LoadSoundMem(L"Assets\\Sound\\Announcement\\62190.wav");
+						soundHandle[15] = LoadSoundMem(L"Assets\\Sound\\Announcement\\62191.wav");
+					}
 					camera = VGet(0.0f, 2.7f, 0.0f);
 					cameraAngle = 0.0f;
 					runDistance = 0;
-					drawDistance = 0;
+					if (navi.section == 2620) {
+						drawDistance = 0;
+					} else if (navi.section == 2619) {
+						drawDistance = 860;
+					}
+					drawStart = drawDistance;
 					for (int i = 0; i < C_DISTANCE; i++) {
 						mRailHandle[0][i] = MV1DuplicateModel(mRailHandleBase);
-						rail.a = GetRailAngle(i, rail.a);
+						rail.a = GetRailAngle(drawDistance, rail.a);
 						MV1SetPosition(mRailHandle[0][i], VGet(rail.x, rail.y, rail.z));
 						MV1SetRotationXYZ(mRailHandle[0][i], VGet(0.0f, rail.a, 0.0f));
 						if (i <= 10) {
@@ -177,8 +199,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 						MV1SetRotationXYZ(mTunnelHandle[i], VGet(0.0f, rail.a, 0.0f));
 						rail.x += sin(rail.a);
 						rail.z += cos(rail.a);
-						mRailPosition[drawDistance][0] = rail.z;
-						mRailPosition[drawDistance][1] = rail.a;
+						mRailPosition[i][0] = rail.z;
+						mRailPosition[i][1] = rail.a;
 						drawDistance++;
 					}
 					PlaySoundMem(soundHandle[0], DX_PLAYTYPE_LOOP);
@@ -207,34 +229,41 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 						runDistance++;
 						navi = UpdateATCSpeed(navi, runDistance);
 						rail.a = GetRailAngle(drawDistance, rail.a);
-						mRailPosition[drawDistance][0] = rail.z;
-						mRailPosition[drawDistance][1] = rail.a;
-						MV1SetPosition(mRailHandle[0][drawDistance % C_DISTANCE], VGet(rail.x, rail.y, rail.z));
-						MV1SetRotationXYZ(mRailHandle[0][drawDistance % C_DISTANCE], VGet(0.0f, rail.a, 0.0f));
-						if (drawDistance >= 740 && drawDistance <= 865) {
-							mPlatformHandle[0][drawDistance - 740] = MV1DuplicateModel(mPlatformHandleBase);
-							MV1SetPosition(mPlatformHandle[0][drawDistance - 740], VGet(rail.x + 4.5f, rail.y, rail.z));
-							MV1SetRotationXYZ(mPlatformHandle[0][drawDistance - 740], VGet(0.0f, rail.a, 0.0f));
-							MV1DeleteModel(mTunnelHandle[drawDistance % C_DISTANCE]);
-							mTunnelHandle[drawDistance % C_DISTANCE] = MV1DuplicateModel(mStationHandleBase);
-						}
+						mRailPosition[drawDistance - drawStart][0] = rail.z;
+						mRailPosition[drawDistance - drawStart][1] = rail.a;
+						MV1SetPosition(mRailHandle[0][(drawDistance - drawStart) % C_DISTANCE], VGet(rail.x, rail.y, rail.z));
+						MV1SetRotationXYZ(mRailHandle[0][(drawDistance - drawStart) % C_DISTANCE], VGet(0.0f, rail.a, 0.0f));
 						if (drawDistance >= 200 && drawDistance <= 210) {
-							MV1DeleteModel(mPlatformHandle[0][drawDistance % C_DISTANCE]);
-							MV1DeleteModel(mTunnelHandle[drawDistance % C_DISTANCE]);
-							mTunnelHandle[drawDistance % C_DISTANCE] = MV1DuplicateModel(mTunnelHandleBase);
+							MV1DeleteModel(mPlatformHandle[0][(drawDistance - drawStart) % C_DISTANCE]);
+							MV1DeleteModel(mTunnelHandle[(drawDistance - drawStart) % C_DISTANCE]);
+							mTunnelHandle[(drawDistance - drawStart) % C_DISTANCE] = MV1DuplicateModel(mTunnelHandleBase);
 						}
-						if (drawDistance >= 940 && drawDistance <= 1065) {
-							MV1DeleteModel(mTunnelHandle[drawDistance % C_DISTANCE]);
-							mTunnelHandle[drawDistance % C_DISTANCE] = MV1DuplicateModel(mTunnelHandleBase);
+						if (drawDistance >= 750 && drawDistance <= 870) {
+							mPlatformHandle[0][drawDistance - 750] = MV1DuplicateModel(mPlatformHandleBase);
+							MV1SetPosition(mPlatformHandle[0][drawDistance - 750], VGet(rail.x + 4.5f, rail.y, rail.z));
+							MV1SetRotationXYZ(mPlatformHandle[0][drawDistance - 750], VGet(0.0f, rail.a, 0.0f));
+							MV1DeleteModel(mTunnelHandle[(drawDistance - drawStart) % C_DISTANCE]);
+							mTunnelHandle[(drawDistance - drawStart) % C_DISTANCE] = MV1DuplicateModel(mStationHandleBase);
 						}
-						if (navi.distance == 850) {
+						if (drawDistance >= 2120 && drawDistance <= 2240) {
+							mPlatformHandle[0][drawDistance - 2120] = MV1DuplicateModel(mPlatformHandleBase);
+							MV1SetPosition(mPlatformHandle[0][drawDistance - 2120], VGet(rail.x + 4.5f, rail.y, rail.z));
+							MV1SetRotationXYZ(mPlatformHandle[0][drawDistance - 2120], VGet(0.0f, rail.a, 0.0f));
+							MV1DeleteModel(mTunnelHandle[(drawDistance - drawStart) % C_DISTANCE]);
+							mTunnelHandle[(drawDistance - drawStart) % C_DISTANCE] = MV1DuplicateModel(mStationHandleBase);
+						}
+						if ((drawDistance >= 950 && drawDistance <= 1070) || (drawDistance >= 2320 && drawDistance <= 2440)) {
+							MV1DeleteModel(mTunnelHandle[(drawDistance - drawStart) % C_DISTANCE]);
+							mTunnelHandle[(drawDistance - drawStart) % C_DISTANCE] = MV1DuplicateModel(mTunnelHandleBase);
+						}
+						if (runDistance == 20) {
 							PlaySoundMem(soundHandle[14], DX_PLAYTYPE_BACK);
 						}
 						if (navi.distance == 200) {
 							PlaySoundMem(soundHandle[15], DX_PLAYTYPE_BACK);
 						}
-						MV1SetPosition(mTunnelHandle[drawDistance % C_DISTANCE], VGet(rail.x, rail.y + 4.5f, rail.z));
-						MV1SetRotationXYZ(mTunnelHandle[drawDistance % C_DISTANCE], VGet(0.0f, rail.a, 0.0f));
+						MV1SetPosition(mTunnelHandle[(drawDistance - drawStart) % C_DISTANCE], VGet(rail.x, rail.y + 4.5f, rail.z));
+						MV1SetRotationXYZ(mTunnelHandle[(drawDistance - drawStart) % C_DISTANCE], VGet(0.0f, rail.a, 0.0f));
 						rail.x += sin(rail.a);
 						rail.z += cos(rail.a);
 						drawDistance++;
@@ -251,7 +280,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 					}
 					if (game.clock == 0) {
 						navi.time++;
-						if (navi.time == -24) {
+						if (navi.section == 2620 && navi.time == -24) {
 							PlaySoundMem(soundHandle[13], DX_PLAYTYPE_BACK);
 						}
 						if (navi.time == -12) {
@@ -283,24 +312,35 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 					navi = UpdateSpeed(navi, train, fps);
 					brakePressure = UpdateBrakePressure(brakePressure, navi, train);
 					current = UpdateCurrent(current, navi, train);
-					DrawCab(bufferHandle, backgroundHandle[1], spriteHandle[0], spriteHandle[1], navi, train, brakePressure.out, current.out);
+					DrawCab(bufferHandle, backgroundHandle[1], spriteHandle[0], spriteHandle[1], spriteHandle[2], navi, train, brakePressure.out, current.out);
 					DrawExtendGraph(0, 0, screenWidth, screenHeight, bufferHandle, TRUE);
 				} else if (game.status == 2) {
 					DrawFillBox(0, 0, screenWidth, screenHeight, COLOR_BLACK);
 					SetCameraNearFar(0.1f, 1000.0f);
 					SetCameraPositionAndAngle(camera, 0.0f, cameraAngle, 0.0f);
 					Draw3DRail(mRailHandle, mTunnelHandle, mPlatformHandle);
-					DrawCab(bufferHandle, backgroundHandle[1], spriteHandle[0], spriteHandle[1], navi, train, brakePressure.out, current.out);
+					DrawCab(bufferHandle, backgroundHandle[1], spriteHandle[0], spriteHandle[1], spriteHandle[2], navi, train, brakePressure.out, current.out);
 					DrawExtendGraph(0, 0, screenWidth, screenHeight, bufferHandle, TRUE);
 					if (game.count == 60) {
 						PlaySoundMem(soundHandle[10], DX_PLAYTYPE_BACK);
 					}
-					if (game.count == 310) {
-						PlaySoundMem(soundHandle[12], DX_PLAYTYPE_BACK);
-					}
-					if (game.count == 490) {
-						mclean = true;
-						game.mode = -1;
+					if (navi.section == 2620) {
+						if (game.count == 310) {
+							mclean = true;
+							navi.section = 2619;
+							game.count = -10;
+							game.status = 0;
+							game.clock = 0;
+							game.mode = 100;
+						}
+					} else if (navi.section == 2619) {
+						if (game.count == 310) {
+							PlaySoundMem(soundHandle[12], DX_PLAYTYPE_BACK);
+						}
+						if (game.count == 490) {
+							mclean = true;
+							game.mode = -1;
+						}
 					}
 				}
 				break;
