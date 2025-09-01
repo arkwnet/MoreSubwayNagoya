@@ -26,7 +26,8 @@ typedef struct {
 	float x;
 	float y;
 	float z;
-	float a;
+	float ax;
+	float ay;
 } Position;
 
 typedef struct {

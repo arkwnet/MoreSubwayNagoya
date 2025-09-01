@@ -184,23 +184,23 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 					drawStart = drawDistance;
 					for (int i = 0; i < C_DISTANCE; i++) {
 						mRailHandle[0][i] = MV1DuplicateModel(mRailHandleBase);
-						rail.a = GetRailAngle(drawDistance, rail.a);
+						rail = GetRailAngle(drawDistance, rail);
 						MV1SetPosition(mRailHandle[0][i], VGet(rail.x, rail.y, rail.z));
-						MV1SetRotationXYZ(mRailHandle[0][i], VGet(0.0f, rail.a, 0.0f));
+						MV1SetRotationXYZ(mRailHandle[0][i], VGet(0.0f, rail.ax, 0.0f));
 						if (i <= 10) {
 							mTunnelHandle[i] = MV1DuplicateModel(mStationHandleBase);
 							mPlatformHandle[0][i] = MV1DuplicateModel(mPlatformHandleBase);
 							MV1SetPosition(mPlatformHandle[0][i], VGet(rail.x + 4.5f, rail.y, rail.z));
-							MV1SetRotationXYZ(mPlatformHandle[0][i], VGet(0.0f, rail.a, 0.0f));
+							MV1SetRotationXYZ(mPlatformHandle[0][i], VGet(0.0f, rail.ax, 0.0f));
 						} else {
 							mTunnelHandle[i] = MV1DuplicateModel(mTunnelHandleBase);
 						}
 						MV1SetPosition(mTunnelHandle[i], VGet(rail.x, rail.y + 4.5f, rail.z));
-						MV1SetRotationXYZ(mTunnelHandle[i], VGet(0.0f, rail.a, 0.0f));
-						rail.x += sin(rail.a);
-						rail.z += cos(rail.a);
+						MV1SetRotationXYZ(mTunnelHandle[i], VGet(0.0f, rail.ax, 0.0f));
+						rail.x += sin(rail.ax);
+						rail.z += cos(rail.ax);
 						mRailPosition[i][0] = rail.z;
-						mRailPosition[i][1] = rail.a;
+						mRailPosition[i][1] = rail.ax;
 						drawDistance++;
 					}
 					PlaySoundMem(soundHandle[0], DX_PLAYTYPE_LOOP);
@@ -217,22 +217,22 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 					ControlTunnelSound(soundHandle[3], navi);
 					SetCameraNearFar(0.1f, 1000.0f);
 					double cameraMove = navi.speed * 1000 / 60 / 60 / fps.Get();
-					point.x += cameraMove * sin(point.a);
-					point.z += cameraMove * cos(point.a);
-					camera.x += cameraMove * sin(point.a);
-					camera.z += cameraMove * cos(point.a);
-					cameraZDistance += cameraMove * cos(point.a);
-					point.a = mRailPosition[runDistance][1];
+					point.x += cameraMove * sin(point.ax);
+					point.z += cameraMove * cos(point.ax);
+					camera.x += cameraMove * sin(point.ax);
+					camera.z += cameraMove * cos(point.ax);
+					cameraZDistance += cameraMove * cos(point.ax);
+					point.ax = mRailPosition[runDistance][1];
 					if (mRailPosition[runDistance][0] <= camera.z) {
 						cameraZDistance = 0.0f;
-						cameraZLength = cos(point.a);
+						cameraZLength = cos(point.ax);
 						runDistance++;
 						navi = UpdateATCSpeed(navi, runDistance);
-						rail.a = GetRailAngle(drawDistance, rail.a);
+						rail = GetRailAngle(drawDistance, rail);
 						mRailPosition[drawDistance - drawStart][0] = rail.z;
-						mRailPosition[drawDistance - drawStart][1] = rail.a;
+						mRailPosition[drawDistance - drawStart][1] = rail.ax;
 						MV1SetPosition(mRailHandle[0][(drawDistance - drawStart) % C_DISTANCE], VGet(rail.x, rail.y, rail.z));
-						MV1SetRotationXYZ(mRailHandle[0][(drawDistance - drawStart) % C_DISTANCE], VGet(0.0f, rail.a, 0.0f));
+						MV1SetRotationXYZ(mRailHandle[0][(drawDistance - drawStart) % C_DISTANCE], VGet(0.0f, rail.ax, 0.0f));
 						if (drawDistance >= 200 && drawDistance <= 210) {
 							MV1DeleteModel(mPlatformHandle[0][(drawDistance - drawStart) % C_DISTANCE]);
 							MV1DeleteModel(mTunnelHandle[(drawDistance - drawStart) % C_DISTANCE]);
@@ -241,14 +241,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 						if (drawDistance >= 750 && drawDistance <= 870) {
 							mPlatformHandle[0][drawDistance - 750] = MV1DuplicateModel(mPlatformHandleBase);
 							MV1SetPosition(mPlatformHandle[0][drawDistance - 750], VGet(rail.x + 4.5f, rail.y, rail.z));
-							MV1SetRotationXYZ(mPlatformHandle[0][drawDistance - 750], VGet(0.0f, rail.a, 0.0f));
+							MV1SetRotationXYZ(mPlatformHandle[0][drawDistance - 750], VGet(0.0f, rail.ax, 0.0f));
 							MV1DeleteModel(mTunnelHandle[(drawDistance - drawStart) % C_DISTANCE]);
 							mTunnelHandle[(drawDistance - drawStart) % C_DISTANCE] = MV1DuplicateModel(mStationHandleBase);
 						}
 						if (drawDistance >= 2120 && drawDistance <= 2240) {
 							mPlatformHandle[0][drawDistance - 2120] = MV1DuplicateModel(mPlatformHandleBase);
 							MV1SetPosition(mPlatformHandle[0][drawDistance - 2120], VGet(rail.x + 4.5f, rail.y, rail.z));
-							MV1SetRotationXYZ(mPlatformHandle[0][drawDistance - 2120], VGet(0.0f, rail.a, 0.0f));
+							MV1SetRotationXYZ(mPlatformHandle[0][drawDistance - 2120], VGet(0.0f, rail.ax, 0.0f));
 							MV1DeleteModel(mTunnelHandle[(drawDistance - drawStart) % C_DISTANCE]);
 							mTunnelHandle[(drawDistance - drawStart) % C_DISTANCE] = MV1DuplicateModel(mStationHandleBase);
 						}
@@ -263,20 +263,20 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 							PlaySoundMem(soundHandle[15], DX_PLAYTYPE_BACK);
 						}
 						MV1SetPosition(mTunnelHandle[(drawDistance - drawStart) % C_DISTANCE], VGet(rail.x, rail.y + 4.5f, rail.z));
-						MV1SetRotationXYZ(mTunnelHandle[(drawDistance - drawStart) % C_DISTANCE], VGet(0.0f, rail.a, 0.0f));
-						rail.x += sin(rail.a);
-						rail.z += cos(rail.a);
+						MV1SetRotationXYZ(mTunnelHandle[(drawDistance - drawStart) % C_DISTANCE], VGet(0.0f, rail.ax, 0.0f));
+						rail.x += sin(rail.ax);
+						rail.z += cos(rail.ax);
 						drawDistance++;
 						navi.distance--;
 					}
-					if (fabsf(point.a - cameraAngle) > 0.001f) {
-						if (point.a < cameraAngle) {
-							cameraAngle -= fabsf(point.a - cameraAngle) / 10.0f;
-						} else if (point.a > cameraAngle) {
-							cameraAngle += fabsf(point.a - cameraAngle) / 10.0f;
+					if (fabsf(point.ax - cameraAngle) > 0.001f) {
+						if (point.ax < cameraAngle) {
+							cameraAngle -= fabsf(point.ax - cameraAngle) / 10.0f;
+						} else if (point.ax > cameraAngle) {
+							cameraAngle += fabsf(point.ax - cameraAngle) / 10.0f;
 						}
 					} else {
-						cameraAngle = point.a;
+						cameraAngle = point.ax;
 					}
 					if (game.clock == 0) {
 						navi.time++;
