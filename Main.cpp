@@ -75,6 +75,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	int mTunnelHandle[200];
 	int mPlatformHandle[2][200];
 	static const int C_DISTANCE = sizeof(mRailHandle[0]) / sizeof(mRailHandle[0][0]);
+	const int mStopHandle = MV1LoadModel(L"Assets\\Model\\Sign\\Stop.mqo");
 	const int mRailHandleBase = MV1LoadModel(L"Assets\\Model\\Rail\\1067.mqo");
 	const int mTunnelHandleBase = MV1LoadModel(L"Assets\\Model\\Tunnel\\Sakuradori1.mqo");
 	const int mStationHandleBase = MV1LoadModel(L"Assets\\Model\\Tunnel\\Sakuradori2.mqo");
@@ -188,6 +189,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 						rail = GetRailAngle(drawDistance, rail);
 						MV1SetPosition(mRailHandle[0][i], VGet(rail.x, rail.y, rail.z));
 						MV1SetRotationXYZ(mRailHandle[0][i], VGet(-rail.ay, rail.ax, 0.0f));
+						if (i == 2) {
+							MV1SetPosition(mStopHandle, VGet(rail.x, rail.y, rail.z));
+							MV1SetRotationXYZ(mStopHandle, VGet(-rail.ay, rail.ax, 0.0f));
+						}
 						if (i <= 10) {
 							mTunnelHandle[i] = MV1DuplicateModel(mStationHandleBase);
 							mPlatformHandle[0][i] = MV1DuplicateModel(mPlatformHandleBase);
@@ -263,6 +268,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 							MV1DeleteModel(mTunnelHandle[(drawDistance - drawStart) % C_DISTANCE]);
 							mTunnelHandle[(drawDistance - drawStart) % C_DISTANCE] = MV1DuplicateModel(mTunnelHandleBase);
 						}
+						if (drawDistance == 862 || drawDistance == 2232) {
+							MV1SetPosition(mStopHandle, VGet(rail.x, rail.y, rail.z));
+							MV1SetRotationXYZ(mStopHandle, VGet(-rail.ay, rail.ax, 0.0f));
+						}
 						if (runDistance == 20) {
 							PlaySoundMem(soundHandle[14], DX_PLAYTYPE_BACK);
 						}
@@ -325,6 +334,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 					}
 					SetCameraPositionAndAngle(camera, -cameraAngle[1], cameraAngle[0], 0.0f);
 					Draw3DRail(mRailHandle, mTunnelHandle, mPlatformHandle);
+					MV1DrawModel(mStopHandle);
 					navi = UpdateNotch(key, joypad, navi, train, soundHandle[4], soundHandle[5], soundHandle[1]);
 					navi = UpdateSpeed(navi, train, fps, cameraAngle[1]);
 					brakePressure = UpdateBrakePressure(brakePressure, navi, train);
