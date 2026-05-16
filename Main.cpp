@@ -268,7 +268,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 							MV1DeleteModel(mTunnelHandle[(drawDistance - drawStart) % C_DISTANCE]);
 							mTunnelHandle[(drawDistance - drawStart) % C_DISTANCE] = MV1DuplicateModel(mTunnelHandleBase);
 						}
-						if (drawDistance == 862 || drawDistance == 2232) {
+						if (drawDistance == 866 || drawDistance == 2236) {
 							MV1SetPosition(mStopHandle, VGet(rail.x, rail.y, rail.z));
 							MV1SetRotationXYZ(mStopHandle, VGet(-rail.ay, rail.ax, 0.0f));
 						}
@@ -332,7 +332,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 					if (navi.score < 0) {
 						navi.score = 0;
 					}
-					SetCameraPositionAndAngle(camera, -cameraAngle[1], cameraAngle[0], 0.0f);
+					SetCameraPositionAndAngle(camera, -cameraAngle[1] + 0.3f, cameraAngle[0], 0.0f);
 					Draw3DRail(mRailHandle, mTunnelHandle, mPlatformHandle);
 					MV1DrawModel(mStopHandle);
 					navi = UpdateNotch(key, joypad, navi, train, soundHandle[4], soundHandle[5], soundHandle[1]);
@@ -344,8 +344,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 				} else if (game.status == 2) {
 					DrawFillBox(0, 0, screenWidth, screenHeight, COLOR_BLACK);
 					SetCameraNearFar(0.1f, 1000.0f);
-					SetCameraPositionAndAngle(camera, -cameraAngle[1], cameraAngle[0], 0.0f);
+					SetCameraPositionAndAngle(camera, -cameraAngle[1] + 0.3f, cameraAngle[0], 0.0f);
 					Draw3DRail(mRailHandle, mTunnelHandle, mPlatformHandle);
+					MV1DrawModel(mStopHandle);
 					DrawCab(bufferHandle, backgroundHandle[1], spriteHandle[0], spriteHandle[1], spriteHandle[2], navi, train, brakePressure.out, current.out);
 					DrawExtendGraph(0, 0, screenWidth, screenHeight, bufferHandle, TRUE);
 					if (game.count == 60) {
