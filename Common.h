@@ -68,6 +68,7 @@ typedef struct {
 	int in;
 	int out;
 	int count;
+	double vel;
 } BrakePressure;
 
 typedef struct {

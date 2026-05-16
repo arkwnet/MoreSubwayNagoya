@@ -65,40 +65,27 @@ BrakePressure UpdateBrakePressure(BrakePressure brakePressure, Navi navi, Train 
 		brakePressure.in = 0;
 		brakePressure.count = 0;
 	} else if (navi.b >= 1 && navi.b <= train.b) {
-		if (navi.speed >= 4 && train.bp[navi.b] > 50 && brakePressure.count >= 120) {
-			brakePressure.in = 50;
+		if (navi.speed >= 4 && train.bp[navi.b] > 40 && brakePressure.count >= 60) {
+			brakePressure.in = 40;
 		} else {
 			brakePressure.in = train.bp[navi.b];
 		}
-		if (brakePressure.count < 120) {
+		if (brakePressure.count < 60) {
 			brakePressure.count++;
 		}
 	} else if (navi.b >= train.b + 1) {
 		brakePressure.in = 320;
 	}
-	if (brakePressure.in > brakePressure.out) {
-		double diff = abs(brakePressure.in - brakePressure.out) / 20;
-		if (diff >= 0.5) {
-			brakePressure.out += diff;
-		} else {
-			brakePressure.out += 1;
-		}
-	} else if (brakePressure.in < brakePressure.out) {
-		double diff = abs(brakePressure.in - brakePressure.out) / 20;
-		if (diff >= 0.5) {
-			brakePressure.out -= diff;
-		} else {
-			brakePressure.out -= 1;
-		}
-	} else {
-		brakePressure.out = brakePressure.in;
-	}
+	double error = brakePressure.in - brakePressure.out;
+	brakePressure.vel += error * 0.008;
+	brakePressure.vel *= 0.78;
+	brakePressure.out += brakePressure.vel;
 	return brakePressure;
 }
 
 BrakePressure UpdateCurrent(BrakePressure current, Navi navi, Train train) {
 	if (navi.b >= 1 && navi.b <= train.b) {
-		if (navi.speed >= 4 && current.count >= 120) {
+		if (navi.speed >= 4 && current.count >= 60) {
 			current.in = (1.0 / train.b) * navi.b * (500.0 * (navi.speed / 80));
 			if (current.in < 40) {
 				current.in = 40;
@@ -106,7 +93,7 @@ BrakePressure UpdateCurrent(BrakePressure current, Navi navi, Train train) {
 		} else {
 			current.in = 0;
 		}
-		if (current.count < 120) {
+		if (current.count < 60) {
 			current.count++;
 		}
 	} else if (navi.p >= 1) {
@@ -115,23 +102,10 @@ BrakePressure UpdateCurrent(BrakePressure current, Navi navi, Train train) {
 		current.in = 0;
 		current.count = 0;
 	}
-	if (current.in > current.out) {
-		double diff = abs(current.in - current.out) / 30.0;
-		if (diff >= 0.5) {
-			current.out += diff;
-		} else {
-			current.out += 1;
-		}
-	} else if (current.in < current.out) {
-		double diff = abs(current.in - current.out) / 30.0;
-		if (diff >= 0.5) {
-			current.out -= diff;
-		} else {
-			current.out -= 1;
-		}
-	} else {
-		current.out = current.in;
-	}
+	double error = current.in - current.out;
+	current.vel += error * 0.012;
+	current.vel *= 0.78;
+	current.out += current.vel;
 	return current;
 }
 
