@@ -21,8 +21,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	Position point;
 	Navi navi;
 	Train train = { 120, 3.0, 3.5, 4.0, 8, 5, {0, 50, 80, 110, 140, 170, 200, 230, 260} };
-	BrakePressure brakePressure = { 0, 0, 0 };
-	BrakePressure current = { 0, 0, 0 };
+	BrakePressure brakePressure = { 0, 0, 0, 0.0 };
+	BrakePressure current = { 0, 0, 0, 0.0 };
 
 	SetUseCharCodeFormat(DX_CHARCODEFORMAT_UTF8);
 	SetFullScreenResolutionMode(DX_FSRESOLUTIONMODE_NATIVE);
@@ -268,7 +268,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 							MV1DeleteModel(mTunnelHandle[(drawDistance - drawStart) % C_DISTANCE]);
 							mTunnelHandle[(drawDistance - drawStart) % C_DISTANCE] = MV1DuplicateModel(mTunnelHandleBase);
 						}
-						if (drawDistance == 862 || drawDistance == 2232) {
+						if (drawDistance == 865 || drawDistance == 2235) {
 							MV1SetPosition(mStopHandle, VGet(rail.x, rail.y, rail.z));
 							MV1SetRotationXYZ(mStopHandle, VGet(-rail.ay, rail.ax, 0.0f));
 						}
@@ -332,7 +332,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 					if (navi.score < 0) {
 						navi.score = 0;
 					}
-					SetCameraPositionAndAngle(camera, -cameraAngle[1], cameraAngle[0], 0.0f);
+					SetCameraPositionAndAngle(camera, -cameraAngle[1] + 0.35f, cameraAngle[0], 0.0f);
 					Draw3DRail(mRailHandle, mTunnelHandle, mPlatformHandle);
 					MV1DrawModel(mStopHandle);
 					navi = UpdateNotch(key, joypad, navi, train, soundHandle[4], soundHandle[5], soundHandle[1]);
@@ -344,8 +344,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 				} else if (game.status == 2) {
 					DrawFillBox(0, 0, screenWidth, screenHeight, COLOR_BLACK);
 					SetCameraNearFar(0.1f, 1000.0f);
-					SetCameraPositionAndAngle(camera, -cameraAngle[1], cameraAngle[0], 0.0f);
+					SetCameraPositionAndAngle(camera, -cameraAngle[1] + 0.35f, cameraAngle[0], 0.0f);
 					Draw3DRail(mRailHandle, mTunnelHandle, mPlatformHandle);
+					MV1DrawModel(mStopHandle);
 					DrawCab(bufferHandle, backgroundHandle[1], spriteHandle[0], spriteHandle[1], spriteHandle[2], navi, train, brakePressure.out, current.out);
 					DrawExtendGraph(0, 0, screenWidth, screenHeight, bufferHandle, TRUE);
 					if (game.count == 60) {
