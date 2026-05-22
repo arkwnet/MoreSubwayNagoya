@@ -1,10 +1,10 @@
-<div align="center">
+﻿<div align="center">
 <img src="./Others/logo.png" width="70%">
 </div>
 
 ## 開発環境
 
-- Windows 10 / 11
+- Windows 11
 - Microsoft Visual Studio Community 2022
 - Metasequoia 4
 - Adobe Illustrator 2025
