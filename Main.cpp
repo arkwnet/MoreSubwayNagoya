@@ -142,10 +142,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 					DrawExtendGraph(0, 0, screenWidth, screenHeight, bufferHandle, FALSE);
 				}
 				if (key[KEY_INPUT_SPACE] == 1 || joypad[PAD_3] == 1) {
-					navi.b = 9;
-					navi.p = 0;
+					navi.cb = 9;
+					navi.cp = 0;
 					navi.section = 2620;
 					navi.score = 100;
+					navi.autobrake = false;
 					game.count = -10;
 					game.status = 0;
 					game.clock = 0;
@@ -160,10 +161,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 					rail = { 0.0f, 0.0f, 0.0f, 0.0f };
 					point = { 0.0f, 0.0f, 0.0f, 0.0f };
 					navi.speed = 0.0;
-					navi.atc = 55;
 					if (navi.section == 2620) {
 						navi.time = -25;
 						navi.arrtime = 80;
+						navi.atc = 55;
 						navi.distance = 860;
 						soundHandle[14] = LoadSoundMem(L"Assets\\Sound\\Announcement\\62200.wav");
 						soundHandle[15] = LoadSoundMem(L"Assets\\Sound\\Announcement\\62201.wav");
@@ -315,9 +316,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 						if (navi.time == -1) {
 							PlaySoundMem(soundHandle[9], DX_PLAYTYPE_BACK);
 						}
-						if (navi.speed >= 76) {
-							navi.score -= navi.speed - 75;
-						}
 						if (navi.speed >= 1 && (navi.time <= -2 || navi.b == train.b + 1)) {
 							navi.score -= 2;
 						}
@@ -337,7 +335,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 					MV1DrawModel(mStopHandle);
 					navi = UpdateNotch(key, joypad, navi, train, soundHandle[4], soundHandle[5], soundHandle[1]);
 					navi = UpdateSpeed(navi, train, fps, cameraAngle[1]);
-					brakePressure = UpdateBrakePressure(brakePressure, navi, train);
+					brakePressure = UpdateBrakePressure(brakePressure, navi, train, soundHandle[1]);
 					current = UpdateCurrent(current, navi, train);
 					DrawCab(bufferHandle, backgroundHandle[1], spriteHandle[0], spriteHandle[1], spriteHandle[2], navi, train, brakePressure.out, current.out);
 					DrawExtendGraph(0, 0, screenWidth, screenHeight, bufferHandle, TRUE);

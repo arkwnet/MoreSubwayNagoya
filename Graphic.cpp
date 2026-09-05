@@ -65,29 +65,29 @@ void DrawCab(int bufferHandle, int backgroundHandle, int spriteHandle, int table
 	DrawNaviInteger(826, navi.distance, spriteHandle);
 	DrawNaviInteger(876, navi.arrtime - navi.time, spriteHandle);
 	DrawNaviInteger(926, navi.score, spriteHandle);
-	if (navi.p >= 1 && navi.p <= train.p - 1) {
-		DrawBox(tx + 434, ty + 177, tx + 486, 164 / train.p * navi.p + ty + 177, GetColor(139, 195, 74), TRUE);
-	} else if (navi.p == train.p) {
+	if (navi.cp >= 1 && navi.cp <= train.p - 1) {
+		DrawBox(tx + 434, ty + 177, tx + 486, 164 / train.p * navi.cp + ty + 177, GetColor(139, 195, 74), TRUE);
+	} else if (navi.cp == train.p) {
 		DrawBox(tx + 434, ty + 177, tx + 486, ty + 341, GetColor(139, 195, 74), TRUE);
 	}
-	if (navi.p == 0) {
+	if (navi.cp == 0) {
 		DrawRectGraph(tx + 434, 920, 384, 0, 52, 40, spriteHandle, TRUE);
-	} else if (navi.p >= 1 && navi.p <= train.p - 1) {
-		DrawRectGraph(tx + 434, 920, 384, 42 * (navi.p + 1), 52, 40, spriteHandle, TRUE);
-	} else if (navi.p == train.p) {
-		DrawRectGraph(tx + 434, 920, 384, 42 * (navi.p + 1), 52, 40, spriteHandle, TRUE);
+	} else if (navi.cp >= 1 && navi.cp <= train.p - 1) {
+		DrawRectGraph(tx + 434, 920, 384, 42 * (navi.cp + 1), 52, 40, spriteHandle, TRUE);
+	} else if (navi.cp == train.p) {
+		DrawRectGraph(tx + 434, 920, 384, 42 * (navi.cp + 1), 52, 40, spriteHandle, TRUE);
 	}
-	if (navi.b >= 1 && navi.b <= train.b - 1) {
-		DrawBox(tx + 508, ty + 341 - 164 / train.b * navi.b, tx + 560, ty + 341, GetColor(255, 152, 0), TRUE);
-	} else if (navi.b == train.b) {
+	if (navi.cb >= 1 && navi.cb <= train.b - 1) {
+		DrawBox(tx + 508, ty + 341 - 164 / train.b * navi.cb, tx + 560, ty + 341, GetColor(255, 152, 0), TRUE);
+	} else if (navi.cb == train.b) {
 		DrawBox(tx + 508, ty + 177, tx + 560, ty + 341, GetColor(255, 152, 0), TRUE);
-	} else if (navi.b == train.b + 1) {
+	} else if (navi.cb == train.b + 1) {
 		DrawBox(tx + 508, ty + 177, tx + 560, ty + 341, GetColor(244, 67, 54), TRUE);
 	}
-	if (navi.b == 0) {
+	if (navi.cb == 0) {
 		DrawRectGraph(tx + 508, 920, 384, 42, 52, 40, spriteHandle, TRUE);
 	} else {
-		DrawRectGraph(tx + 508, 920, 384, 42 * (navi.b + 1), 52, 40, spriteHandle, TRUE);
+		DrawRectGraph(tx + 508, 920, 384, 42 * (navi.cb + 1), 52, 40, spriteHandle, TRUE);
 	}
 	SetDrawScreen(DX_SCREEN_BACK);
 }
