@@ -89,5 +89,19 @@ void DrawCab(int bufferHandle, int backgroundHandle, int spriteHandle, int table
 	} else {
 		DrawRectGraph(tx + 508, 920, 384, 42 * (navi.cb + 1), 52, 40, spriteHandle, TRUE);
 	}
+	if (navi.atc == 55) {
+		DrawRectGraph(756, 683, 111, 343, 37, 37, spriteHandle, TRUE);
+	} else if (navi.atc == 75) {
+		DrawRectGraph(845, 703, 148, 343, 37, 37, spriteHandle, TRUE);
+	}
+	if (navi.b >= 1) {
+		DrawRectGraph(269, 667, 0, 380, 60, 53, spriteHandle, TRUE);
+	}
+	if (navi.autobrake == true) {
+		DrawRectGraph(327, 667, 60, 380, 60, 53, spriteHandle, TRUE);
+	}
+	if (navi.b == train.b + 1) {
+		DrawRectGraph(384, 667, 120, 380, 60, 53, spriteHandle, TRUE);
+	}
 	SetDrawScreen(DX_SCREEN_BACK);
 }
