@@ -151,6 +151,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 					rail = { 0.0f, 0.0f, 0.0f, 0.0f };
 					point = { 0.0f, 0.0f, 0.0f, 0.0f };
 					navi.speed = 0.0;
+					if (navi.cb == 0) {
+						navi.cb = 1;
+					}
+					if (navi.cp != 0) {
+						navi.cp = 0;
+					}
 					if (navi.section == 2620) {
 						navi.time = -25;
 						navi.arrtime = 80;
@@ -159,7 +165,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 						soundHandle[14] = LoadSoundMem(L"Assets\\Sound\\Announcement\\62200.wav");
 						soundHandle[15] = LoadSoundMem(L"Assets\\Sound\\Announcement\\62201.wav");
 					} else if (navi.section == 2619) {
-						navi.time = -13;
+						navi.time = -14;
 						navi.arrtime = 110;
 						navi.distance = 1370;
 						soundHandle[14] = LoadSoundMem(L"Assets\\Sound\\Announcement\\62190.wav");
@@ -270,6 +276,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 						if (navi.distance == 200) {
 							PlaySoundMem(soundHandle[15], DX_PLAYTYPE_BACK);
 						}
+						if (navi.distance == -5) {
+							navi = SetATCSpeed(navi, 0);
+						}
 						MV1SetPosition(mTunnelHandle[(drawDistance - drawStart) % C_DISTANCE], VGet(rail.x, rail.y + 4.5f, rail.z));
 						MV1SetRotationXYZ(mTunnelHandle[(drawDistance - drawStart) % C_DISTANCE], VGet(-rail.ay, rail.ax, 0.0f));
 						rail.x += sin(rail.ax);
@@ -301,8 +310,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 						if (navi.section == 2620 && navi.time == -24) {
 							PlaySoundMem(soundHandle[13], DX_PLAYTYPE_BACK);
 						}
-						if (navi.section == 2620 && navi.time == -13) {
-							navi = SetATCSpeed(navi, 75);
+						if (navi.time == -13) {
+							if (navi.section == 2620) {
+								navi = SetATCSpeed(navi, 75);
+							} else if (navi.section == 2619) {
+								if (navi.atc != 55) {
+									navi = SetATCSpeed(navi, 55);
+								}
+							}
 						}
 						if (navi.time == -12) {
 							PlaySoundMem(soundHandle[11], DX_PLAYTYPE_BACK);

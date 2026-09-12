@@ -31,33 +31,43 @@ Navi UpdateNotch(int key[256], int joypad[8], Navi navi, Train train, int soundH
 			PlaySoundMem(soundHandleNotch1, DX_PLAYTYPE_BACK);
 		}
 	}
-	int diff = ceil(navi.speed) - navi.atc;
-	if (diff >= 1 && navi.autobrake == false) {
-		navi.autobrake = true;
-		navi.score -= 5;
-	} else if (diff <= -3 && navi.autobrake == true) {
-		if (navi.b > navi.cb) {
-			PlaySoundMem(soundHandleBrake, DX_PLAYTYPE_BACK);
-		}
-		navi.autobrake = false;
-	}
-	if (navi.autobrake == true) {
-		if (diff >= 10) {
-			navi.b = 7;
-			navi.p = 0;
-		} else if (diff < 10 && diff >= 3) {
-			navi.b = 5;
-			navi.p = 0;
-		} else if (diff < 3) {
-			navi.b = 3;
-			navi.p = 0;
-		}
-		if (navi.cb > navi.b) {
-			navi.b = navi.cb;
+	if (navi.atc == 0) {
+		navi.b = train.b + 1;
+		navi.p = 0;
+		if (navi.speed >= 0.5 && navi.autobrake == false) {
+			navi.autobrake = true;
+		} else if (navi.speed < 0.5 && navi.autobrake == true) {
+			navi.autobrake = false;
 		}
 	} else {
-		navi.b = navi.cb;
-		navi.p = navi.cp;
+		int diff = ceil(navi.speed) - navi.atc;
+		if (diff >= 2 && navi.autobrake == false) {
+			navi.autobrake = true;
+			navi.score -= 5;
+		} else if (diff <= -2 && navi.autobrake == true) {
+			if (navi.b > navi.cb) {
+				PlaySoundMem(soundHandleBrake, DX_PLAYTYPE_BACK);
+			}
+			navi.autobrake = false;
+		}
+		if (navi.autobrake == true) {
+			if (diff >= 10) {
+				navi.b = 7;
+				navi.p = 0;
+			} else if (diff < 10 && diff >= 3) {
+				navi.b = 5;
+				navi.p = 0;
+			} else if (diff < 3) {
+				navi.b = 3;
+				navi.p = 0;
+			}
+			if (navi.cb > navi.b) {
+				navi.b = navi.cb;
+			}
+		} else {
+			navi.b = navi.cb;
+			navi.p = navi.cp;
+		}
 	}
 	return navi;
 }
