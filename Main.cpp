@@ -57,18 +57,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	spriteHandle[0] = LoadGraph(L"Assets\\Image\\GameMap.png");
 	spriteHandle[1] = LoadGraph(L"Assets\\Image\\Tablet.png");
 	spriteHandle[2] = LoadGraph(L"Assets\\Image\\Station.png");
-	int soundHandle[16];
-	soundHandle[0] = LoadSoundMem(L"Assets\\Sound\\Inverter.wav");
-	soundHandle[1] = LoadSoundMem(L"Assets\\Sound\\BrakeDecompress.wav");
-	soundHandle[2] = LoadSoundMem(L"Assets\\Sound\\BrakeStop.wav");
-	soundHandle[3] = LoadSoundMem(L"Assets\\Sound\\Tunnel.wav");
-	soundHandle[4] = LoadSoundMem(L"Assets\\Sound\\Notch1.wav");
-	soundHandle[5] = LoadSoundMem(L"Assets\\Sound\\Notch2.wav");
-	soundHandle[9] = LoadSoundMem(L"Assets\\Sound\\Buzzer.wav");
-	soundHandle[10] = LoadSoundMem(L"Assets\\Sound\\DoorOpen.wav");
-	soundHandle[11] = LoadSoundMem(L"Assets\\Sound\\DoorClose.wav");
-	soundHandle[12] = LoadSoundMem(L"Assets\\Sound\\Announcement\\End.wav");
-	soundHandle[13] = LoadSoundMem(L"Assets\\Sound\\Announcement\\62210.wav");
+	InitSound();
 
 	float mRailPosition[2000][3];
 	int mRailHandle[4][200];
@@ -81,7 +70,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	const int mStationHandleBase = MV1LoadModel(L"Assets\\Model\\Tunnel\\Sakuradori2.mqo");
 	const int mPlatformHandleBase = MV1LoadModel(L"Assets\\Model\\Station\\Platform\\620.mqo");
 
-	int runDistance, drawDistance, drawStart;
+	int runDistance, totalDistance, drawDistance, drawStart;
 	int pad, padX, padY;
 	int padNum = GetJoypadNum();
 	if (padNum >= 1) {
@@ -151,6 +140,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 					game.status = 0;
 					game.clock = 0;
 					game.mode = 100;
+					totalDistance = 0;
 				}
 				if (key[KEY_INPUT_ESCAPE] == 1) {
 					status = false;
@@ -164,7 +154,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 					if (navi.section == 2620) {
 						navi.time = -25;
 						navi.arrtime = 80;
-						navi.atc = 55;
+						navi.atc = 0;
 						navi.distance = 860;
 						soundHandle[14] = LoadSoundMem(L"Assets\\Sound\\Announcement\\62200.wav");
 						soundHandle[15] = LoadSoundMem(L"Assets\\Sound\\Announcement\\62201.wav");
@@ -239,7 +229,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 						cameraZDistance = 0.0f;
 						cameraZLength = fabsf(sin(point.ay)) + fabsf(cos(point.ax) * cos(point.ay));
 						runDistance++;
-						navi = UpdateATCSpeed(navi, runDistance);
+						totalDistance++;
+						navi = UpdateATCSpeed(navi, totalDistance);
 						rail = GetRailAngle(drawDistance, rail);
 						mRailPosition[drawDistance - drawStart][0] = rail.z;
 						mRailPosition[drawDistance - drawStart][1] = rail.ax;
@@ -309,6 +300,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 						navi.time++;
 						if (navi.section == 2620 && navi.time == -24) {
 							PlaySoundMem(soundHandle[13], DX_PLAYTYPE_BACK);
+						}
+						if (navi.section == 2620 && navi.time == -13) {
+							navi = SetATCSpeed(navi, 75);
 						}
 						if (navi.time == -12) {
 							PlaySoundMem(soundHandle[11], DX_PLAYTYPE_BACK);

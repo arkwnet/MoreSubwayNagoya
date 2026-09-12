@@ -1,5 +1,6 @@
 ﻿#include "DxLib.h"
 #include "Common.h"
+#include "Control.h"
 
 Position GetRailAngle(int i, Position position) {
 	// Tokushige: 0m
@@ -18,11 +19,11 @@ Position GetRailAngle(int i, Position position) {
 }
 
 Navi UpdateATCSpeed(Navi navi, int distance) {
-	if (distance == 215) {
-		navi.atc = 75;
+	if (distance == 465) {
+		navi = SetATCSpeed(navi, 55);
 	}
-	if (distance == 625) {
-		navi.atc = 55;
+	if (distance == 1775) {
+		navi = SetATCSpeed(navi, 75);
 	}
 	return navi;
 }

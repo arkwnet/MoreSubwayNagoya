@@ -97,4 +97,7 @@ static const int COLOR_WHITE = GetColor(255, 255, 255);
 static const wchar_t VERSION[14] = L"Version 0.5.0";
 static const wchar_t COPYRIGHT[71] = L"(c) 2023-2026 Sora Arakawa and others. Licensed under the MIT License.";
 
+extern int soundHandle[16];
+void InitSound();
+
 #endif

@@ -89,7 +89,9 @@ void DrawCab(int bufferHandle, int backgroundHandle, int spriteHandle, int table
 	} else {
 		DrawRectGraph(tx + 508, 920, 384, 42 * (navi.cb + 1), 52, 40, spriteHandle, TRUE);
 	}
-	if (navi.atc == 55) {
+	if (navi.atc == 0) {
+		DrawRectGraph(718, 897, 0, 343, 37, 37, spriteHandle, TRUE);
+	} else if (navi.atc == 55) {
 		DrawRectGraph(756, 683, 111, 343, 37, 37, spriteHandle, TRUE);
 	} else if (navi.atc == 75) {
 		DrawRectGraph(845, 703, 148, 343, 37, 37, spriteHandle, TRUE);

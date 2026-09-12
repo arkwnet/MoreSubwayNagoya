@@ -89,6 +89,12 @@ Navi UpdateSpeed(Navi navi, Train train, Fps fps, float gradient) {
 	return navi;
 }
 
+Navi SetATCSpeed(Navi navi, int speed) {
+	PlaySoundMem(soundHandle[6], DX_PLAYTYPE_BACK);
+	navi.atc = speed;
+	return navi;
+}
+
 BrakePressure UpdateBrakePressure(BrakePressure brakePressure, Navi navi, Train train, int soundHandleBrake) {
 	if (navi.b == 0) {
 		brakePressure.in = 0;
