@@ -8,9 +8,6 @@ Navi UpdateNotch(int key[256], int joypad[8], Navi navi, Train train, int soundH
 		if (navi.cb > 0) {
 			navi.cb--;
 			PlaySoundMem(soundHandleNotch2, DX_PLAYTYPE_BACK);
-			if (navi.b == 0 || navi.speed <= 5) {
-				PlaySoundMem(soundHandleBrake, DX_PLAYTYPE_BACK);
-			}
 		}
 	}
 	if (key[KEY_INPUT_RIGHT] == 1 || joypad[PAD_RIGHT] == 1) {
@@ -45,9 +42,6 @@ Navi UpdateNotch(int key[256], int joypad[8], Navi navi, Train train, int soundH
 			navi.autobrake = true;
 			navi.score -= 5;
 		} else if (diff <= -2 && navi.autobrake == true) {
-			if (navi.b > navi.cb) {
-				PlaySoundMem(soundHandleBrake, DX_PLAYTYPE_BACK);
-			}
 			navi.autobrake = false;
 		}
 		if (navi.autobrake == true) {
@@ -111,9 +105,6 @@ BrakePressure UpdateBrakePressure(BrakePressure brakePressure, Navi navi, Train 
 		brakePressure.count = 0;
 	} else if (navi.b >= 1 && navi.b <= train.b) {
 		if (navi.speed >= 4 && train.bp[navi.b] > 40 && brakePressure.count >= 60) {
-			if (brakePressure.count == 60) {
-				PlaySoundMem(soundHandleBrake, DX_PLAYTYPE_BACK);
-			}
 			brakePressure.in = 40;
 		} else {
 			brakePressure.in = train.bp[navi.b];
@@ -128,6 +119,9 @@ BrakePressure UpdateBrakePressure(BrakePressure brakePressure, Navi navi, Train 
 	brakePressure.vel += error * 0.008;
 	brakePressure.vel *= 0.78;
 	brakePressure.out += brakePressure.vel;
+	if (error <= -8 && abs(brakePressure.vel) > 0.5 && CheckSoundMem(soundHandleBrake) == 0) {
+		PlaySoundMem(soundHandleBrake, DX_PLAYTYPE_BACK);
+	}
 	return brakePressure;
 }
 

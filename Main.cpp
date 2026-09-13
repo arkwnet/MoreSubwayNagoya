@@ -358,6 +358,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 					DrawExtendGraph(0, 0, screenWidth, screenHeight, bufferHandle, TRUE);
 					if (game.count == 60) {
 						PlaySoundMem(soundHandle[10], DX_PLAYTYPE_BACK);
+						StopSoundMem(soundHandle[0]);
+						StopSoundMem(soundHandle[2]);
+						StopSoundMem(soundHandle[3]);
 					}
 					if (navi.section == 2620) {
 						if (game.count == 310) {
