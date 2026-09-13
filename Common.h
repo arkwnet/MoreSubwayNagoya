@@ -68,8 +68,8 @@ typedef struct {
 } Train;
 
 typedef struct {
-	int in;
-	int out;
+	double in;
+	double out;
 	int count;
 	double vel;
 } BrakePressure;
