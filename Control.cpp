@@ -1,33 +1,66 @@
-﻿#include "DxLib.h"
+﻿#include <cmath>
+#include "DxLib.h"
 #include "Common.h"
 #include "Control.h"
 
 Navi UpdateNotch(int key[256], int joypad[8], Navi navi, Train train, int soundHandleNotch1, int soundHandleNotch2, int soundHandleBrake) {
 	if (key[KEY_INPUT_LEFT] == 1 || joypad[PAD_LEFT] == 1) {
-		if (navi.b > 0) {
-			navi.b--;
+		if (navi.cb > 0) {
+			navi.cb--;
 			PlaySoundMem(soundHandleNotch2, DX_PLAYTYPE_BACK);
-			if (navi.b == 0 || navi.speed <= 5) {
-				PlaySoundMem(soundHandleBrake, DX_PLAYTYPE_BACK);
-			}
 		}
 	}
 	if (key[KEY_INPUT_RIGHT] == 1 || joypad[PAD_RIGHT] == 1) {
-		if (navi.b < train.b + 1) {
-			navi.b++;
+		if (navi.cb < train.b + 1) {
+			navi.cb++;
 			PlaySoundMem(soundHandleNotch2, DX_PLAYTYPE_BACK);
 		}
 	}
 	if (key[KEY_INPUT_UP] == 1 || joypad[PAD_UP] == 1) {
-		if (navi.p > 0) {
-			navi.p--;
+		if (navi.cp > 0) {
+			navi.cp--;
 			PlaySoundMem(soundHandleNotch1, DX_PLAYTYPE_BACK);
 		}
 	}
 	if (key[KEY_INPUT_DOWN] == 1 || joypad[PAD_DOWN] == 1) {
-		if (navi.p < train.p) {
-			navi.p++;
+		if (navi.cp < train.p) {
+			navi.cp++;
 			PlaySoundMem(soundHandleNotch1, DX_PLAYTYPE_BACK);
+		}
+	}
+	if (navi.atc == 0) {
+		navi.b = train.b + 1;
+		navi.p = 0;
+		if (navi.speed >= 0.5 && navi.autobrake == false) {
+			navi.autobrake = true;
+		} else if (navi.speed < 0.5 && navi.autobrake == true) {
+			navi.autobrake = false;
+		}
+	} else {
+		int diff = ceil(navi.speed) - navi.atc;
+		if (diff >= 2 && navi.autobrake == false) {
+			navi.autobrake = true;
+			navi.score -= 5;
+		} else if (diff <= -2 && navi.autobrake == true) {
+			navi.autobrake = false;
+		}
+		if (navi.autobrake == true) {
+			if (diff >= 10) {
+				navi.b = 7;
+				navi.p = 0;
+			} else if (diff < 10 && diff >= 3) {
+				navi.b = 5;
+				navi.p = 0;
+			} else if (diff < 3) {
+				navi.b = 3;
+				navi.p = 0;
+			}
+			if (navi.cb > navi.b) {
+				navi.b = navi.cb;
+			}
+		} else {
+			navi.b = navi.cb;
+			navi.p = navi.cp;
 		}
 	}
 	return navi;
@@ -60,7 +93,13 @@ Navi UpdateSpeed(Navi navi, Train train, Fps fps, float gradient) {
 	return navi;
 }
 
-BrakePressure UpdateBrakePressure(BrakePressure brakePressure, Navi navi, Train train) {
+Navi SetATCSpeed(Navi navi, int speed) {
+	PlaySoundMem(soundHandle[6], DX_PLAYTYPE_BACK);
+	navi.atc = speed;
+	return navi;
+}
+
+BrakePressure UpdateBrakePressure(BrakePressure brakePressure, Navi navi, Train train, int soundHandleBrake) {
 	if (navi.b == 0) {
 		brakePressure.in = 0;
 		brakePressure.count = 0;
@@ -70,7 +109,7 @@ BrakePressure UpdateBrakePressure(BrakePressure brakePressure, Navi navi, Train 
 		} else {
 			brakePressure.in = train.bp[navi.b];
 		}
-		if (brakePressure.count < 60) {
+		if (brakePressure.count <= 60) {
 			brakePressure.count++;
 		}
 	} else if (navi.b >= train.b + 1) {
@@ -80,6 +119,9 @@ BrakePressure UpdateBrakePressure(BrakePressure brakePressure, Navi navi, Train 
 	brakePressure.vel += error * 0.008;
 	brakePressure.vel *= 0.78;
 	brakePressure.out += brakePressure.vel;
+	if (error <= -8 && abs(brakePressure.vel) > 0.5 && CheckSoundMem(soundHandleBrake) == 0) {
+		PlaySoundMem(soundHandleBrake, DX_PLAYTYPE_BACK);
+	}
 	return brakePressure;
 }
 

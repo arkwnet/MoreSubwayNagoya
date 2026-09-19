@@ -57,18 +57,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	spriteHandle[0] = LoadGraph(L"Assets\\Image\\GameMap.png");
 	spriteHandle[1] = LoadGraph(L"Assets\\Image\\Tablet.png");
 	spriteHandle[2] = LoadGraph(L"Assets\\Image\\Station.png");
-	int soundHandle[16];
-	soundHandle[0] = LoadSoundMem(L"Assets\\Sound\\Inverter.wav");
-	soundHandle[1] = LoadSoundMem(L"Assets\\Sound\\BrakeDecompress.wav");
-	soundHandle[2] = LoadSoundMem(L"Assets\\Sound\\BrakeStop.wav");
-	soundHandle[3] = LoadSoundMem(L"Assets\\Sound\\Tunnel.wav");
-	soundHandle[4] = LoadSoundMem(L"Assets\\Sound\\Notch1.wav");
-	soundHandle[5] = LoadSoundMem(L"Assets\\Sound\\Notch2.wav");
-	soundHandle[9] = LoadSoundMem(L"Assets\\Sound\\Buzzer.wav");
-	soundHandle[10] = LoadSoundMem(L"Assets\\Sound\\DoorOpen.wav");
-	soundHandle[11] = LoadSoundMem(L"Assets\\Sound\\DoorClose.wav");
-	soundHandle[12] = LoadSoundMem(L"Assets\\Sound\\Announcement\\End.wav");
-	soundHandle[13] = LoadSoundMem(L"Assets\\Sound\\Announcement\\62210.wav");
+	InitSound();
 
 	float mRailPosition[2000][3];
 	int mRailHandle[4][200];
@@ -81,7 +70,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	const int mStationHandleBase = MV1LoadModel(L"Assets\\Model\\Tunnel\\Sakuradori2.mqo");
 	const int mPlatformHandleBase = MV1LoadModel(L"Assets\\Model\\Station\\Platform\\620.mqo");
 
-	int runDistance, drawDistance, drawStart;
+	int runDistance, totalDistance, drawDistance, drawStart;
 	int pad, padX, padY;
 	int padNum = GetJoypadNum();
 	if (padNum >= 1) {
@@ -142,14 +131,16 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 					DrawExtendGraph(0, 0, screenWidth, screenHeight, bufferHandle, FALSE);
 				}
 				if (key[KEY_INPUT_SPACE] == 1 || joypad[PAD_3] == 1) {
-					navi.b = 9;
-					navi.p = 0;
+					navi.cb = 9;
+					navi.cp = 0;
 					navi.section = 2620;
 					navi.score = 100;
+					navi.autobrake = false;
 					game.count = -10;
 					game.status = 0;
 					game.clock = 0;
 					game.mode = 100;
+					totalDistance = 0;
 				}
 				if (key[KEY_INPUT_ESCAPE] == 1) {
 					status = false;
@@ -160,15 +151,21 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 					rail = { 0.0f, 0.0f, 0.0f, 0.0f };
 					point = { 0.0f, 0.0f, 0.0f, 0.0f };
 					navi.speed = 0.0;
-					navi.atc = 55;
+					if (navi.cb == 0) {
+						navi.cb = 1;
+					}
+					if (navi.cp != 0) {
+						navi.cp = 0;
+					}
 					if (navi.section == 2620) {
 						navi.time = -25;
 						navi.arrtime = 80;
+						navi.atc = 0;
 						navi.distance = 860;
 						soundHandle[14] = LoadSoundMem(L"Assets\\Sound\\Announcement\\62200.wav");
 						soundHandle[15] = LoadSoundMem(L"Assets\\Sound\\Announcement\\62201.wav");
 					} else if (navi.section == 2619) {
-						navi.time = -13;
+						navi.time = -14;
 						navi.arrtime = 110;
 						navi.distance = 1370;
 						soundHandle[14] = LoadSoundMem(L"Assets\\Sound\\Announcement\\62190.wav");
@@ -238,7 +235,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 						cameraZDistance = 0.0f;
 						cameraZLength = fabsf(sin(point.ay)) + fabsf(cos(point.ax) * cos(point.ay));
 						runDistance++;
-						navi = UpdateATCSpeed(navi, runDistance);
+						totalDistance++;
+						navi = UpdateATCSpeed(navi, totalDistance);
 						rail = GetRailAngle(drawDistance, rail);
 						mRailPosition[drawDistance - drawStart][0] = rail.z;
 						mRailPosition[drawDistance - drawStart][1] = rail.ax;
@@ -278,6 +276,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 						if (navi.distance == 200) {
 							PlaySoundMem(soundHandle[15], DX_PLAYTYPE_BACK);
 						}
+						if (navi.distance == -5) {
+							navi = SetATCSpeed(navi, 0);
+						}
 						MV1SetPosition(mTunnelHandle[(drawDistance - drawStart) % C_DISTANCE], VGet(rail.x, rail.y + 4.5f, rail.z));
 						MV1SetRotationXYZ(mTunnelHandle[(drawDistance - drawStart) % C_DISTANCE], VGet(-rail.ay, rail.ax, 0.0f));
 						rail.x += sin(rail.ax);
@@ -309,14 +310,20 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 						if (navi.section == 2620 && navi.time == -24) {
 							PlaySoundMem(soundHandle[13], DX_PLAYTYPE_BACK);
 						}
+						if (navi.time == -13) {
+							if (navi.section == 2620) {
+								navi = SetATCSpeed(navi, 75);
+							} else if (navi.section == 2619) {
+								if (navi.atc != 55) {
+									navi = SetATCSpeed(navi, 55);
+								}
+							}
+						}
 						if (navi.time == -12) {
 							PlaySoundMem(soundHandle[11], DX_PLAYTYPE_BACK);
 						}
 						if (navi.time == -1) {
 							PlaySoundMem(soundHandle[9], DX_PLAYTYPE_BACK);
-						}
-						if (navi.speed >= 76) {
-							navi.score -= navi.speed - 75;
 						}
 						if (navi.speed >= 1 && (navi.time <= -2 || navi.b == train.b + 1)) {
 							navi.score -= 2;
@@ -337,7 +344,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 					MV1DrawModel(mStopHandle);
 					navi = UpdateNotch(key, joypad, navi, train, soundHandle[4], soundHandle[5], soundHandle[1]);
 					navi = UpdateSpeed(navi, train, fps, cameraAngle[1]);
-					brakePressure = UpdateBrakePressure(brakePressure, navi, train);
+					brakePressure = UpdateBrakePressure(brakePressure, navi, train, soundHandle[1]);
 					current = UpdateCurrent(current, navi, train);
 					DrawCab(bufferHandle, backgroundHandle[1], spriteHandle[0], spriteHandle[1], spriteHandle[2], navi, train, brakePressure.out, current.out);
 					DrawExtendGraph(0, 0, screenWidth, screenHeight, bufferHandle, TRUE);
@@ -351,6 +358,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 					DrawExtendGraph(0, 0, screenWidth, screenHeight, bufferHandle, TRUE);
 					if (game.count == 60) {
 						PlaySoundMem(soundHandle[10], DX_PLAYTYPE_BACK);
+						StopSoundMem(soundHandle[0]);
+						StopSoundMem(soundHandle[2]);
+						StopSoundMem(soundHandle[3]);
 					}
 					if (navi.section == 2620) {
 						if (game.count == 310) {
