@@ -193,20 +193,20 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 					for (int i = 0; i < C_DISTANCE; i++) {
 						mRailHandle[0][i] = MV1DuplicateModel(mRailHandleBase);
 						rail = GetRailAngle(drawDistance, rail);
-						MV1SetPosition(mRailHandle[0][i], GetPositionX(rail.x, rail.y - 2.229f, rail.z, rail.ax, 0.0f));
+						MV1SetPosition(mRailHandle[0][i], GetPosition(rail.x, rail.y - 2.229f, rail.z, -rail.ay, rail.ax, 0.0f));
 						MV1SetRotationXYZ(mRailHandle[0][i], VGet(-rail.ay, rail.ax, 0.0f));
 						if (i == 2) {
-							MV1SetPosition(mStopHandle, GetPositionX(rail.x, rail.y - 2.229f, rail.z, rail.ax, 0.0f));
+							MV1SetPosition(mStopHandle, GetPosition(rail.x, rail.y - 2.229f, rail.z, -rail.ay, rail.ax, 0.0f));
 							MV1SetRotationXYZ(mStopHandle, VGet(-rail.ay, rail.ax, 0.0f));
 						}
 						if (i <= 10) {
 							mTunnelHandle[0][i] = MV1DuplicateModel(mStationHandleBase);
 							mTunnelHandle[1][i] = MV1DuplicateModel(mStationHandleBase);
 							mPlatformHandle[0][i] = MV1DuplicateModel(mPlatformHandleBase);
-							MV1SetPosition(mPlatformHandle[0][i], GetPositionX(rail.x, rail.y - 2.229f - 0.175f, rail.z, rail.ax, 4.5f));
+							MV1SetPosition(mPlatformHandle[0][i], GetPosition(rail.x, rail.y - 2.229f - 0.175f, rail.z, -rail.ay, rail.ax, 4.5f));
 							MV1SetRotationXYZ(mPlatformHandle[0][i], VGet(-rail.ay, rail.ax, 0.0f));
 							mPlatformHandle[1][i] = MV1DuplicateModel(mPlatformHandleBase);
-							MV1SetPosition(mPlatformHandle[1][i], GetPositionX(rail.x, rail.y - 2.229f - 0.175f, rail.z, rail.ax, 4.5f));
+							MV1SetPosition(mPlatformHandle[1][i], GetPosition(rail.x, rail.y - 2.229f - 0.175f, rail.z, -rail.ay, rail.ax, 4.5f));
 							MV1SetRotationXYZ(mPlatformHandle[1][i], VGet(-rail.ay, DX_PI_F + rail.ax, 0.0f));
 						} else {
 							mTunnelHandle[0][i] = MV1DuplicateModel(mTunnelHandleBase);
@@ -214,10 +214,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 								mTunnelHandle[1][i] = MV1DuplicateModel(mTunnelHandleBase);
 							}
 						}
-						MV1SetPosition(mTunnelHandle[0][i], GetPositionX(rail.x, rail.y, rail.z, rail.ax, 0.0f));
+						MV1SetPosition(mTunnelHandle[0][i], GetPosition(rail.x, rail.y, rail.z, -rail.ay, rail.ax, 0.0f));
 						MV1SetRotationXYZ(mTunnelHandle[0][i], VGet(-rail.ay, rail.ax, 0.0f));
 						if (i < 40) {
-							MV1SetPosition(mTunnelHandle[1][i], GetPositionX(rail.x, rail.y, rail.z, rail.ax, 8.8f));
+							MV1SetPosition(mTunnelHandle[1][i], GetPosition(rail.x, rail.y, rail.z, -rail.ay, rail.ax, 8.8f));
 							MV1SetRotationXYZ(mTunnelHandle[1][i], VGet(-rail.ay, DX_PI_F + rail.ax, 0.0f));
 						}
 						rail.x += sin(rail.ax);
@@ -261,7 +261,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 						mRailPosition[drawDistance - drawStart][0] = rail.z;
 						mRailPosition[drawDistance - drawStart][1] = rail.ax;
 						mRailPosition[drawDistance - drawStart][2] = rail.ay;
-						MV1SetPosition(mRailHandle[0][(drawDistance - drawStart) % C_DISTANCE], GetPositionX(rail.x, rail.y - 2.229f, rail.z, rail.ax, 0.0f));
+						MV1SetPosition(mRailHandle[0][(drawDistance - drawStart) % C_DISTANCE], GetPosition(rail.x, rail.y - 2.229f, rail.z, -rail.ay, rail.ax, 0.0f));
 						MV1SetRotationXYZ(mRailHandle[0][(drawDistance - drawStart) % C_DISTANCE], VGet(-rail.ay, rail.ax, 0.0f));
 						if (drawDistance >= 200 && drawDistance <= 210) {
 							DeleteObject(mPlatformHandle[0][(drawDistance - drawStart) % C_DISTANCE]);
@@ -280,34 +280,34 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 						}
 						if (drawDistance >= 745 && drawDistance <= 870) {
 							mPlatformHandle[0][drawDistance - 745] = MV1DuplicateModel(mPlatformHandleBase);
-							MV1SetPosition(mPlatformHandle[0][drawDistance - 745], GetPositionX(rail.x, rail.y - 2.229f - 0.175f, rail.z, rail.ax, 4.5f));
+							MV1SetPosition(mPlatformHandle[0][drawDistance - 745], GetPosition(rail.x, rail.y - 2.229f - 0.175f, rail.z, -rail.ay, rail.ax, 4.5f));
 							MV1SetRotationXYZ(mPlatformHandle[0][drawDistance - 745], VGet(-rail.ay, rail.ax, 0.0f));
 							mPlatformHandle[1][drawDistance - 745] = MV1DuplicateModel(mPlatformHandleBase);
-							MV1SetPosition(mPlatformHandle[1][drawDistance - 745], GetPositionX(rail.x, rail.y - 2.229f - 0.175f, rail.z, rail.ax, 4.5f));
+							MV1SetPosition(mPlatformHandle[1][drawDistance - 745], GetPosition(rail.x, rail.y - 2.229f - 0.175f, rail.z, -rail.ay, rail.ax, 4.5f));
 							MV1SetRotationXYZ(mPlatformHandle[1][drawDistance - 745], VGet(-rail.ay, DX_PI_F + rail.ax, 0.0f));
 							DeleteObject(mTunnelHandle[0][(drawDistance - drawStart) % C_DISTANCE]);
 							mTunnelHandle[0][(drawDistance - drawStart) % C_DISTANCE] = MV1DuplicateModel(mStationHandleBase);
-							MV1SetPosition(mTunnelHandle[1][drawDistance - 745], GetPositionX(rail.x, rail.y, rail.z, rail.ax, 8.8f));
+							MV1SetPosition(mTunnelHandle[1][drawDistance - 745], GetPosition(rail.x, rail.y, rail.z, -rail.ay, rail.ax, 8.8f));
 							MV1SetRotationXYZ(mTunnelHandle[1][drawDistance - 745], VGet(-rail.ay, DX_PI_F + rail.ax, 0.0f));
 						}
 						if (drawDistance >= 870 && drawDistance < 910) {
-							MV1SetPosition(mTunnelHandle[1][drawDistance - 745], GetPositionX(rail.x, rail.y, rail.z, rail.ax, 8.8f));
+							MV1SetPosition(mTunnelHandle[1][drawDistance - 745], GetPosition(rail.x, rail.y, rail.z, -rail.ay, rail.ax, 8.8f));
 							MV1SetRotationXYZ(mTunnelHandle[1][drawDistance - 745], VGet(-rail.ay, DX_PI_F + rail.ax, 0.0f));
 						}
 						if (drawDistance >= 2115 && drawDistance <= 2240) {
 							mPlatformHandle[0][drawDistance - 2115] = MV1DuplicateModel(mPlatformHandleBase);
-							MV1SetPosition(mPlatformHandle[0][drawDistance - 2115], GetPositionX(rail.x, rail.y - 2.229f - 0.175f, rail.z, rail.ax, 4.5f));
+							MV1SetPosition(mPlatformHandle[0][drawDistance - 2115], GetPosition(rail.x, rail.y - 2.229f - 0.175f, -rail.ay, rail.z, rail.ax, 4.5f));
 							MV1SetRotationXYZ(mPlatformHandle[0][drawDistance - 2115], VGet(-rail.ay, rail.ax, 0.0f));
 							mPlatformHandle[1][drawDistance - 2115] = MV1DuplicateModel(mPlatformHandleBase);
-							MV1SetPosition(mPlatformHandle[1][drawDistance - 2115], GetPositionX(rail.x, rail.y - 2.229f - 0.175f, rail.z, rail.ax, 4.5f));
+							MV1SetPosition(mPlatformHandle[1][drawDistance - 2115], GetPosition(rail.x, rail.y - 2.229f - 0.175f, rail.z, -rail.ay, rail.ax, 4.5f));
 							MV1SetRotationXYZ(mPlatformHandle[1][drawDistance - 2115], VGet(-rail.ay, DX_PI_F + rail.ax, 0.0f));
 							DeleteObject(mTunnelHandle[0][(drawDistance - drawStart) % C_DISTANCE]);
 							mTunnelHandle[0][(drawDistance - drawStart) % C_DISTANCE] = MV1DuplicateModel(mStationHandleBase);
-							MV1SetPosition(mTunnelHandle[1][drawDistance - 2115], GetPositionX(rail.x, rail.y, rail.z, rail.ax, 8.8f));
+							MV1SetPosition(mTunnelHandle[1][drawDistance - 2115], GetPosition(rail.x, rail.y, rail.z, -rail.ay, rail.ax, 8.8f));
 							MV1SetRotationXYZ(mTunnelHandle[1][drawDistance - 2115], VGet(-rail.ay, DX_PI_F + rail.ax, 0.0f));
 						}
 						if (drawDistance >= 2240 && drawDistance < 2280) {
-							MV1SetPosition(mTunnelHandle[1][drawDistance - 2115], GetPositionX(rail.x, rail.y, rail.z, rail.ax, 8.8f));
+							MV1SetPosition(mTunnelHandle[1][drawDistance - 2115], GetPosition(rail.x, rail.y, rail.z, -rail.ay, rail.ax, 8.8f));
 							MV1SetRotationXYZ(mTunnelHandle[1][drawDistance - 2115], VGet(-rail.ay, DX_PI_F + rail.ax, 0.0f));
 						}
 						if ((drawDistance >= 945 && drawDistance <= 1070) || (drawDistance >= 2315 && drawDistance <= 2440)) {
@@ -315,7 +315,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 							mTunnelHandle[0][(drawDistance - drawStart) % C_DISTANCE] = MV1DuplicateModel(mTunnelHandleBase);
 						}
 						if (drawDistance == 865 || drawDistance == 2235) {
-							MV1SetPosition(mStopHandle, GetPositionX(rail.x, rail.y - 2.229f, rail.z, rail.ax, 0.0f));
+							MV1SetPosition(mStopHandle, GetPosition(rail.x, rail.y - 2.229f, rail.z, -rail.ay, rail.ax, 0.0f));
 							MV1SetRotationXYZ(mStopHandle, VGet(-rail.ay, rail.ax, 0.0f));
 						}
 						if (runDistance == 40) {
@@ -332,7 +332,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 						if (navi.distance == -5) {
 							navi = SetATCSpeed(navi, 0);
 						}
-						MV1SetPosition(mTunnelHandle[0][(drawDistance - drawStart) % C_DISTANCE], GetPositionX(rail.x, rail.y, rail.z, rail.ax, 0.0f));
+						MV1SetPosition(mTunnelHandle[0][(drawDistance - drawStart) % C_DISTANCE], GetPosition(rail.x, rail.y, rail.z, -rail.ay, rail.ax, 0.0f));
 						MV1SetRotationXYZ(mTunnelHandle[0][(drawDistance - drawStart) % C_DISTANCE], VGet(-rail.ay, rail.ax, 0.0f));
 						rail.x += sin(rail.ax);
 						rail.y += sin(rail.ay);
