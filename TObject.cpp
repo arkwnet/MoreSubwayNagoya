@@ -1,4 +1,9 @@
-﻿#include "DxLib.h"
+﻿#include <cmath>
+#include "DxLib.h"
+
+VECTOR GetPositionX(float x, float y, float z, float a, float d) {
+	return VGet(x + cosf(a) * d, y, z - sinf(a) * d);
+}
 
 void DeleteObject(int& handle) {
 	if (handle != -1) {
