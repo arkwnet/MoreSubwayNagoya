@@ -233,9 +233,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 							}
 							MV1SetRotationXYZ(mTunnelHandle[1][i], VGet(-rail.ay, DX_PI_F + rail.ax, 0.0f));
 						}
-						rail.x += sin(rail.ax);
-						rail.y += sin(rail.ay);
-						rail.z += fabsf(sin(rail.ay)) + fabsf(cos(rail.ax) * cos(rail.ay));
+						rail.x += sinf(rail.ax);
+						rail.y += sinf(rail.ay);
+						rail.z += fabsf(sinf(rail.ay)) + fabsf(cosf(rail.ax) * cosf(rail.ay));
 						mRailPosition[i][0] = rail.z;
 						mRailPosition[i][1] = rail.ax;
 						mRailPosition[i][2] = rail.ay;
@@ -254,19 +254,19 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 					ControlBrakeSound(soundHandle[2], navi);
 					ControlTunnelSound(soundHandle[3], navi);
 					SetCameraNearFar(0.1f, 1000.0f);
-					double cameraMove = navi.speed * 1000 / 60 / 60 / fps.Get();
-					point.x += cameraMove * sin(point.ax);
-					point.y += cameraMove * sin(point.ay);
-					point.z += cameraMove * (fabsf(sin(point.ay)) + fabsf(cos(point.ax) * cos(point.ay)));
-					camera.x += cameraMove * sin(point.ax);
-					camera.y += cameraMove * sin(point.ay);
-					camera.z += cameraMove * (fabsf(sin(point.ay)) + fabsf(cos(point.ax) * cos(point.ay)));
-					cameraZDistance += cameraMove * (fabsf(sin(point.ay)) + fabsf(cos(point.ax) * cos(point.ay)));
+					float cameraMove = static_cast<float>(navi.speed * 1000.0 / 60.0 / 60.0 / fps.Get());
+					point.x += cameraMove * sinf(point.ax);
+					point.y += cameraMove * sinf(point.ay);
+					point.z += cameraMove * (fabsf(sinf(point.ay)) + fabsf(cosf(point.ax) * cosf(point.ay)));
+					camera.x += cameraMove * sinf(point.ax);
+					camera.y += cameraMove * sinf(point.ay);
+					camera.z += cameraMove * (fabsf(sinf(point.ay)) + fabsf(cosf(point.ax) * cosf(point.ay)));
+					cameraZDistance += cameraMove * (fabsf(sinf(point.ay)) + fabsf(cosf(point.ax) * cosf(point.ay)));
 					point.ax = mRailPosition[runDistance][1];
 					point.ay = mRailPosition[runDistance][2];
 					if (mRailPosition[runDistance][0] <= camera.z) {
 						cameraZDistance = 0.0f;
-						cameraZLength = fabsf(sin(point.ay)) + fabsf(cos(point.ax) * cos(point.ay));
+						cameraZLength = fabsf(sinf(point.ay)) + fabsf(cosf(point.ax) * cosf(point.ay));
 						runDistance++;
 						totalDistance++;
 						navi = UpdateATCSpeed(navi, totalDistance);
@@ -347,9 +347,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 						}
 						MV1SetPosition(mTunnelHandle[0][(drawDistance - drawStart) % C_DISTANCE], GetPosition(rail.x, rail.y, rail.z, -rail.ay, rail.ax, 0.0f, 0.0f));
 						MV1SetRotationXYZ(mTunnelHandle[0][(drawDistance - drawStart) % C_DISTANCE], VGet(-rail.ay, rail.ax, 0.0f));
-						rail.x += sin(rail.ax);
-						rail.y += sin(rail.ay);
-						rail.z += fabsf(sin(rail.ay)) + fabsf(cos(rail.ax) * cos(rail.ay));
+						rail.x += sinf(rail.ax);
+						rail.y += sinf(rail.ay);
+						rail.z += fabsf(sinf(rail.ay)) + fabsf(cosf(rail.ax) * cosf(rail.ay));
 						drawDistance++;
 						navi.distance--;
 					}
