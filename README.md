@@ -35,4 +35,6 @@
 - Google Fonts (https://fonts.google.com/icons) - テクスチャ素材
 - まるはち交通センター (http://www.maruhachi-kotsu.com/) - 車両諸元
 
+名古屋市交通局発行「市営百年史 資料編 5 建設 (https://www.kotsu.city.nagoya.jp/rp/about/TRP0004710.htm)」を駅およびトンネル構造の参考資料としています。
+
 本プログラム及び本プログラムに含まれるオープンソースソフトウェアのライセンスについて、詳しくは同梱の `LICENSE.txt` ファイルをご覧ください。
