@@ -50,11 +50,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		return -1;
 	}
 
-	int bufferHandle = MakeScreen(1920, 1080, TRUE);
+	int bufferHandle = MakeScreen(BUFFER_WIDTH, BUFFER_HEIGHT, TRUE);
 	int backgroundHandle[2];
 	backgroundHandle[1] = LoadGraph(L"Assets\\Image\\Cab.png");
 	int spriteHandle[16];
-	spriteHandle[0] = LoadGraph(L"Assets\\Image\\GameMap.png");
 	spriteHandle[1] = LoadGraph(L"Assets\\Image\\Tablet.png");
 	spriteHandle[2] = LoadGraph(L"Assets\\Image\\Station.png");
 	InitSound();
@@ -84,6 +83,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	Fps fps;
 	Game game = {
 		-1,		// mode
+		0,		// submode
 		0,		// status
 		0,		// count
 		0		// clock
@@ -139,24 +139,92 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 					DrawExtendGraph(0, 0, screenWidth, screenHeight, bufferHandle, FALSE);
 				}
 				if (key[KEY_INPUT_SPACE] == 1 || joypad[PAD_3] == 1) {
-					navi.cb = 9;
-					navi.cp = 0;
-					navi.section = 2620;
-					navi.score = 100;
-					navi.autobrake = false;
-					game.count = -10;
+					PlaySoundMem(soundHandle[4], DX_PLAYTYPE_BACK);
 					game.status = 0;
-					game.clock = 0;
-					game.mode = 100;
-					totalDistance = 0;
+					game.submode = 3;
+					game.mode = 2;
 					mclean = true;
 				}
 				if (key[KEY_INPUT_ESCAPE] == 1) {
 					status = false;
 				}
 				break;
+			case 2:
+				if (game.status == 0) {
+					backgroundHandle[0] = LoadGraph(L"Assets\\Image\\Menu.jpg");
+					spriteHandle[0] = LoadGraph(L"Assets\\Image\\MenuMap.png");
+					game.status = 1;
+				} else if (game.status == 1) {
+					SetDrawScreen(bufferHandle);
+					DrawGraph(0, 120, backgroundHandle[0], FALSE);
+					DrawBox(0, 0, BUFFER_WIDTH, 120, COLOR_BLACK, TRUE);
+					DrawRectGraph(0, 0, 0, 0, 640, 120, spriteHandle[0], TRUE);
+					DrawRectGraph(BUFFER_WIDTH - 380, 0, 0, 120, 380, 120, spriteHandle[0], TRUE);
+					DrawRectGraph(BUFFER_WIDTH - 380, 0, 0, 120, 380, 120, spriteHandle[0], TRUE);
+					for (int i = 0; i < 3; i++) {
+						DrawRectGraph(145, 190 + (i * 220), 0, 240, 800, 220, spriteHandle[0], TRUE);
+						DrawRectGraph(995, 190 + (i * 220), 0, 240, 800, 220, spriteHandle[0], TRUE);
+					}
+					int c = 0;
+					for (int i = 0; i < 3; i++) {
+						for (int j = 0; j < 2; j++) {
+							if (game.submode == c) {
+								SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+							} else {
+								SetDrawBlendMode(DX_BLENDMODE_ALPHA, 80);
+							}
+							DrawRectGraph(155 + (j * 850), 200 + (i * 220), 0, 480 + (c * 180), 760, 180, spriteHandle[0], FALSE);
+							c++;
+						}
+					}
+					SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+					DrawBox(630, 930, BUFFER_WIDTH, 1030, COLOR_BLACK, TRUE);
+					DrawCircleAA(630, 980, 50, 32, COLOR_BLACK, TRUE);
+					DrawRectGraph(659, 945, 0, 1560, 160, 70, spriteHandle[0], TRUE);
+					DrawRectGraph(985, 945, 0, 1630, 160, 70, spriteHandle[0], TRUE);
+					DrawRectGraph(1304, 945, 0, 1700, 160, 70, spriteHandle[0], TRUE);
+					DrawRectGraph(840, 945, 300, 1560, 100, 70, spriteHandle[0], TRUE);
+					DrawRectGraph(1160, 945, 300, 1630, 100, 70, spriteHandle[0], TRUE);
+					DrawRectGraph(1450, 945, 300, 1700, 450, 70, spriteHandle[0], TRUE);
+					SetDrawScreen(DX_SCREEN_BACK);
+					game.status = 2;
+				}
+				DrawExtendGraph(0, 0, screenWidth, screenHeight, bufferHandle, FALSE);
+				if ((key[KEY_INPUT_UP] == 1 || joypad[PAD_UP] == 1) && game.submode == 5) {
+					PlaySoundMem(soundHandle[5], DX_PLAYTYPE_BACK);
+					game.submode = 3;
+					game.status = 1;
+				}
+				if ((key[KEY_INPUT_DOWN] == 1 || joypad[PAD_DOWN] == 1) && game.submode == 3) {
+					PlaySoundMem(soundHandle[5], DX_PLAYTYPE_BACK);
+					game.submode = 5;
+					game.status = 1;
+				}
+				if (key[KEY_INPUT_SPACE] == 1 || joypad[PAD_3] == 1) {
+					if (game.submode == 3) {
+						PlaySoundMem(soundHandle[4], DX_PLAYTYPE_BACK);
+						navi.cb = 9;
+						navi.cp = 0;
+						navi.section = 2620;
+						navi.score = 100;
+						navi.autobrake = false;
+						game.count = -10;
+						game.status = 0;
+						game.clock = 0;
+						game.mode = 100;
+						totalDistance = 0;
+						mclean = true;
+					}
+				}
+				if (key[KEY_INPUT_ESCAPE] == 1) {
+					PlaySoundMem(soundHandle[1], DX_PLAYTYPE_BACK);
+					game.count = -10;
+					game.mode = 1;
+				}
+				break;
 			case 100:
 				if (game.status == 0) {
+					spriteHandle[0] = LoadGraph(L"Assets\\Image\\GameMap.png");
 					rail = { 0.0f, 0.0f, 0.0f, 0.0f };
 					point = { 0.0f, 0.0f, 0.0f, 0.0f };
 					navi.speed = 0.0;
