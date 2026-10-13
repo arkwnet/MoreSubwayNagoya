@@ -3,29 +3,57 @@
 #include "Common.h"
 #include "Control.h"
 
-Navi UpdateNotch(int key[256], int joypad[8], Navi navi, Train train, int soundHandleNotch1, int soundHandleNotch2, int soundHandleBrake) {
-	if (key[KEY_INPUT_LEFT] == 1 || joypad[PAD_LEFT] == 1) {
-		if (navi.cb > 0) {
-			navi.cb--;
-			PlaySoundMem(soundHandleNotch2, DX_PLAYTYPE_BACK);
+Navi UpdateNotch(int key[256], int joypad[8], int controller, Navi navi, Train train, int soundHandleNotch1, int soundHandleNotch2, int soundHandleBrake) {
+	if (controller == 2) {
+		int pad = GetJoypadInputState(DX_INPUT_KEY_PAD1);
+		int padX, padY;
+		GetJoypadAnalogInput(&padX, &padY, DX_INPUT_PAD1);
+		if (padY < -100) {
+			navi.cp = 0;
+			if (padY == -1000) { navi.cb = 9; }
+			if (padY == -961) { navi.cb = 8; }
+			if (padY == -852) { navi.cb = 7; }
+			if (padY == -750) { navi.cb = 6; }
+			if (padY == -641) { navi.cb = 5; }
+			if (padY == -531) { navi.cb = 4; }
+			if (padY == -430) { navi.cb = 3; }
+			if (padY == -320) { navi.cb = 2; }
+			if (padY == -211) { navi.cb = 1; }
+		} else if (padY > 100) {
+			navi.cb = 0;
+			if (padY == 239) { navi.cp = 1; }
+			if (padY == 429) { navi.cp = 2; }
+			if (padY == 612) { navi.cp = 3; }
+			if (padY == 802) { navi.cp = 4; }
+			if (padY == 1000) { navi.cp = 5; }
+		} else {
+			navi.cp = 0;
+			navi.cb = 0;
 		}
-	}
-	if (key[KEY_INPUT_RIGHT] == 1 || joypad[PAD_RIGHT] == 1) {
-		if (navi.cb < train.b + 1) {
-			navi.cb++;
-			PlaySoundMem(soundHandleNotch2, DX_PLAYTYPE_BACK);
+	} else {
+		if (key[KEY_INPUT_LEFT] == 1 || joypad[PAD_LEFT] == 1) {
+			if (navi.cb > 0) {
+				navi.cb--;
+				PlaySoundMem(soundHandleNotch2, DX_PLAYTYPE_BACK);
+			}
 		}
-	}
-	if (key[KEY_INPUT_UP] == 1 || joypad[PAD_UP] == 1) {
-		if (navi.cp > 0) {
-			navi.cp--;
-			PlaySoundMem(soundHandleNotch1, DX_PLAYTYPE_BACK);
+		if (key[KEY_INPUT_RIGHT] == 1 || joypad[PAD_RIGHT] == 1) {
+			if (navi.cb < train.b + 1) {
+				navi.cb++;
+				PlaySoundMem(soundHandleNotch2, DX_PLAYTYPE_BACK);
+			}
 		}
-	}
-	if (key[KEY_INPUT_DOWN] == 1 || joypad[PAD_DOWN] == 1) {
-		if (navi.cp < train.p) {
-			navi.cp++;
-			PlaySoundMem(soundHandleNotch1, DX_PLAYTYPE_BACK);
+		if (key[KEY_INPUT_UP] == 1 || joypad[PAD_UP] == 1) {
+			if (navi.cp > 0) {
+				navi.cp--;
+				PlaySoundMem(soundHandleNotch1, DX_PLAYTYPE_BACK);
+			}
+		}
+		if (key[KEY_INPUT_DOWN] == 1 || joypad[PAD_DOWN] == 1) {
+			if (navi.cp < train.p) {
+				navi.cp++;
+				PlaySoundMem(soundHandleNotch1, DX_PLAYTYPE_BACK);
+			}
 		}
 	}
 	if (navi.atc == 0) {

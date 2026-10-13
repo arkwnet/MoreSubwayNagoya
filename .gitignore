@@ -1,6 +1,7 @@
-.vs
+﻿.vs
 Debug
 Release
 Log.txt
+savedata
 *.emm
 *.pmm

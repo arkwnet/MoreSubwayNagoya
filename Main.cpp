@@ -3,6 +3,7 @@
 #include "Common.h"
 #include "Control.h"
 #include "Graphic.h"
+#include "Interface.h"
 #include "Map.h"
 #include "Sound.h"
 #include "Title.h"
@@ -31,18 +32,46 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	SetUseZBuffer3D(TRUE);
 	SetWindowIconID(100);
 	SetMainWindowText(L"もっと! 地下鉄 大名古屋");
+	int savedata[2][4] = {
+		{ 0, 7, 0, 0 },
+		{ 3, 0, 0, 0 },
+	};
 	FILE* fp;
 	errno_t error;
-	error = fopen_s(&fp, "fullscreen", "r");
+	error = fopen_s(&fp, "savedata", "r");
 	if (fp == NULL) {
-		ChangeWindowMode(TRUE);
-		screenWidth = 1366;
-		screenHeight = 768;
+		error = fopen_s(&fp, "savedata", "wb");
+		if (fp != NULL) {
+			fwrite(&savedata, sizeof(savedata), 1, fp);
+			fclose(fp);
+		}
 	} else {
 		fclose(fp);
+		error = fopen_s(&fp, "savedata", "rb");
+		if (fp != NULL) {
+			fread(&savedata, sizeof(savedata), 1, fp);
+			fclose(fp);
+		}
+	}
+	if (savedata[1][0] == 0) {
 		ChangeWindowMode(FALSE);
 		screenWidth = 1920;
 		screenHeight = 1080;
+	} else {
+		ChangeWindowMode(TRUE);
+		if (savedata[1][0] == 1) {
+			screenWidth = 1920;
+			screenHeight = 1080;
+		} else if (savedata[1][0] == 2) {
+			screenWidth = 1600;
+			screenHeight = 900;
+		} else if (savedata[1][0] == 3) {
+			screenWidth = 1366;
+			screenHeight = 768;
+		} else if (savedata[1][0] == 4) {
+			screenWidth = 1280;
+			screenHeight = 720;
+		}
 	}
 	SetGraphMode(screenWidth, screenHeight, 32);
 	SetWindowSize(screenWidth, screenHeight);
@@ -56,6 +85,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	int spriteHandle[16];
 	spriteHandle[1] = LoadGraph(L"Assets\\Image\\Tablet.png");
 	spriteHandle[2] = LoadGraph(L"Assets\\Image\\Station.png");
+	spriteHandle[3] = LoadGraph(L"Assets\\Image\\CommonMap.png");
 	InitSound();
 
 	float mRailPosition[2000][3];
@@ -75,6 +105,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	if (padNum >= 1) {
 		isJoypad = true;
 		SetJoypadDeadZone(DX_INPUT_PAD1, 0.0);
+	} else {
+		savedata[1][1] = 0;
 	}
 	int controlBuffer;
 	bool status = true;
@@ -157,13 +189,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 				} else if (game.status == 1) {
 					SetDrawScreen(bufferHandle);
 					DrawGraph(0, 120, backgroundHandle[0], FALSE);
-					DrawBox(0, 0, BUFFER_WIDTH, 120, COLOR_BLACK, TRUE);
-					DrawRectGraph(0, 0, 0, 0, 640, 120, spriteHandle[0], TRUE);
-					DrawRectGraph(BUFFER_WIDTH - 380, 0, 0, 120, 380, 120, spriteHandle[0], TRUE);
-					DrawRectGraph(BUFFER_WIDTH - 380, 0, 0, 120, 380, 120, spriteHandle[0], TRUE);
+					DrawInterfaceHeader(spriteHandle[3], spriteHandle[0]);
 					for (int i = 0; i < 3; i++) {
-						DrawRectGraph(145, 190 + (i * 220), 0, 240, 800, 220, spriteHandle[0], TRUE);
-						DrawRectGraph(995, 190 + (i * 220), 0, 240, 800, 220, spriteHandle[0], TRUE);
+						DrawRectGraph(145, 190 + (i * 220), 0, 140, 800, 220, spriteHandle[0], TRUE);
+						DrawRectGraph(995, 190 + (i * 220), 0, 140, 800, 220, spriteHandle[0], TRUE);
 					}
 					int c = 0;
 					for (int i = 0; i < 3; i++) {
@@ -173,19 +202,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 							} else {
 								SetDrawBlendMode(DX_BLENDMODE_ALPHA, 80);
 							}
-							DrawRectGraph(155 + (j * 850), 200 + (i * 220), 0, 480 + (c * 180), 760, 180, spriteHandle[0], FALSE);
+							DrawRectGraph(155 + (j * 850), 200 + (i * 220), 0, 380 + (c * 180), 760, 180, spriteHandle[0], FALSE);
 							c++;
 						}
 					}
 					SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
-					DrawBox(630, 930, BUFFER_WIDTH, 1030, COLOR_BLACK, TRUE);
-					DrawCircleAA(630, 980, 50, 32, COLOR_BLACK, TRUE);
-					DrawRectGraph(659, 945, 0, 1560, 160, 70, spriteHandle[0], TRUE);
-					DrawRectGraph(985, 945, 0, 1630, 160, 70, spriteHandle[0], TRUE);
-					DrawRectGraph(1304, 945, 0, 1700, 160, 70, spriteHandle[0], TRUE);
-					DrawRectGraph(840, 945, 300, 1560, 100, 70, spriteHandle[0], TRUE);
-					DrawRectGraph(1160, 945, 300, 1630, 100, 70, spriteHandle[0], TRUE);
-					DrawRectGraph(1450, 945, 300, 1700, 450, 70, spriteHandle[0], TRUE);
+					DrawInterfaceFooter(spriteHandle[3], savedata[1][1]);
 					SetDrawScreen(DX_SCREEN_BACK);
 					game.status = 2;
 				}
@@ -201,19 +223,27 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 					game.status = 1;
 				}
 				if (key[KEY_INPUT_SPACE] == 1 || joypad[PAD_3] == 1) {
-					if (game.submode == 3) {
-						PlaySoundMem(soundHandle[4], DX_PLAYTYPE_BACK);
-						navi.cb = 9;
-						navi.cp = 0;
-						navi.section = 2620;
-						navi.score = 100;
-						navi.autobrake = false;
-						game.count = -10;
-						game.status = 0;
-						game.clock = 0;
-						game.mode = 100;
-						totalDistance = 0;
-						mclean = true;
+					PlaySoundMem(soundHandle[4], DX_PLAYTYPE_BACK);
+					mclean = true;
+					switch (game.submode) {
+						case 3:
+							PlaySoundMem(soundHandle[4], DX_PLAYTYPE_BACK);
+							navi.cb = 9;
+							navi.cp = 0;
+							navi.section = 2620;
+							navi.score = 100;
+							navi.autobrake = false;
+							game.count = -10;
+							game.status = 0;
+							game.clock = 0;
+							game.mode = 100;
+							totalDistance = 0;
+							break;
+						case 5:
+							game.count = -10;
+							game.status = 0;
+							game.mode = 3;
+							break;
 					}
 				}
 				if (key[KEY_INPUT_ESCAPE] == 1) {
@@ -221,6 +251,94 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 					game.count = -10;
 					game.mode = 1;
 				}
+				break;
+			case 3:
+				if (game.status == 0) {
+					backgroundHandle[0] = LoadGraph(L"Assets\\Image\\Menu.jpg");
+					spriteHandle[0] = LoadGraph(L"Assets\\Image\\SettingsMap.png");
+					game.submode = 0;
+					game.status = 1;
+				} else if (game.status == 1) {
+					SetDrawScreen(bufferHandle);
+					SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 255);
+					DrawGraph(0, 0, backgroundHandle[0], FALSE);
+					DrawInterfaceHeader(spriteHandle[3], spriteHandle[0]);
+					DrawRectGraph(105, 185, 15, 165, 1710, 130, spriteHandle[0], TRUE);
+					DrawRectGraph(105, 335, 15, 165, 1710, 130, spriteHandle[0], TRUE);
+					DrawRectGraph(105, 485, 15, 165, 1710, 130, spriteHandle[0], TRUE);
+					DrawRectGraph(102, 150 * game.submode + 182, 12, 302, 1716, 136, spriteHandle[0], TRUE);
+					DrawRectGraph(120, 200, 30, 450, 1680, 100, spriteHandle[0], TRUE);
+					DrawRectGraph(120, 350, 30, 450, 1680, 100, spriteHandle[0], TRUE);
+					DrawRectGraph(120, 500, 30, 450, 1680, 100, spriteHandle[0], TRUE);
+					DrawRectGraph(150, 215, 20, 565, 600, 70, spriteHandle[0], TRUE);
+					DrawRectGraph(150, 365, 20, 635, 600, 70, spriteHandle[0], TRUE);
+					DrawRectGraph(150, 515, 20, 705, 600, 70, spriteHandle[0], TRUE);
+					DrawRectGraph(1077, 213, 675, savedata[1][0] * 70 + 563, 495, 70, spriteHandle[0], TRUE);
+					DrawRectGraph(1045, 363, 1195, savedata[1][1] * 70 + 563, 560, 70, spriteHandle[0], TRUE);
+					DrawRectGraph(1045, 513, 1195, savedata[1][2] * 70 + 773, 560, 70, spriteHandle[0], TRUE);
+					DrawInterfaceFooter(spriteHandle[3], savedata[1][1]);
+					SetDrawScreen(DX_SCREEN_BACK);
+					game.status = 2;
+				} else if (game.status == 2) {
+					if (key[KEY_INPUT_UP] == 1 || joypad[PAD_UP] == 1) {
+						if (game.submode > 0) {
+							PlaySoundMem(soundHandle[5], DX_PLAYTYPE_BACK);
+							game.submode--;
+							game.status = 1;
+						}
+					}
+					if (key[KEY_INPUT_DOWN] == 1 || joypad[PAD_DOWN] == 1) {
+						if (game.submode < 2) {
+							PlaySoundMem(soundHandle[5], DX_PLAYTYPE_BACK);
+							game.submode++;
+							game.status = 1;
+						}
+					}
+					if (key[KEY_INPUT_LEFT] == 1 || joypad[PAD_LEFT] == 1) {
+						if (savedata[1][game.submode] > 0) {
+							PlaySoundMem(soundHandle[5], DX_PLAYTYPE_BACK);
+							savedata[1][game.submode]--;
+							game.status = 1;
+						}
+					}
+					if (key[KEY_INPUT_RIGHT] == 1 || joypad[PAD_RIGHT] == 1) {
+						if (game.submode == 0 && savedata[1][0] < 4) {
+							PlaySoundMem(soundHandle[5], DX_PLAYTYPE_BACK);
+							savedata[1][0]++;
+							game.status = 1;
+						}
+						if (game.submode == 1 && savedata[1][1] < 2) {
+							PlaySoundMem(soundHandle[5], DX_PLAYTYPE_BACK);
+							savedata[1][1]++;
+							game.status = 1;
+						}
+						if (game.submode == 2 && savedata[1][2] < 1) {
+							PlaySoundMem(soundHandle[5], DX_PLAYTYPE_BACK);
+							savedata[1][2]++;
+							game.status = 1;
+						}
+					}
+					if (key[KEY_INPUT_SPACE] == 1 || joypad[PAD_3] == 1) {
+						PlaySoundMem(soundHandle[4], DX_PLAYTYPE_NORMAL);
+						error = fopen_s(&fp, "savedata", "wb");
+						if (fp != NULL) {
+							fwrite(&savedata, sizeof(savedata), 1, fp);
+							fclose(fp);
+						}
+						game.status = 10;
+					}
+					if (key[KEY_INPUT_ESCAPE] == 1) {
+						PlaySoundMem(soundHandle[1], DX_PLAYTYPE_BACK);
+						game.status = 10;
+					}
+				} else if (game.status == 10) {
+					game.count = -10;
+					game.status = 0;
+					game.submode = 5;
+					game.mode = 2;
+					mclean = true;
+				}
+				DrawExtendGraph(0, 0, screenWidth, screenHeight, bufferHandle, FALSE);
 				break;
 			case 100:
 				if (game.status == 0) {
@@ -476,7 +594,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 					SetCameraPositionAndAngle(camera, -cameraAngle[1] + 0.35f, cameraAngle[0], 0.0f);
 					Draw3DRail(mRailHandle, mTunnelHandle, mPlatformHandle);
 					MV1DrawModel(mStopHandle);
-					navi = UpdateNotch(key, joypad, navi, train, soundHandle[4], soundHandle[5], soundHandle[1]);
+					navi = UpdateNotch(key, joypad, savedata[1][1], navi, train, soundHandle[4], soundHandle[5], soundHandle[1]);
 					navi = UpdateSpeed(navi, train, fps, cameraAngle[1]);
 					brakePressure = UpdateBrakePressure(brakePressure, navi, train, soundHandle[1]);
 					current = UpdateCurrent(current, navi, train);
