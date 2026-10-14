@@ -17,6 +17,7 @@ class Fps {
 
 typedef struct {
 	int mode;
+	int submode;
 	int status;
 	int count;
 	int clock;
@@ -91,10 +92,13 @@ static const int PAD_1 = 4;
 static const int PAD_2 = 5;
 static const int PAD_3 = 6;
 
+static const int BUFFER_WIDTH = 1920;
+static const int BUFFER_HEIGHT = 1080;
+
 static const int COLOR_BLACK = GetColor(0, 0, 0);
 static const int COLOR_WHITE = GetColor(255, 255, 255);
 
-static const wchar_t VERSION[14] = L"Version 0.6.0";
+static const wchar_t VERSION[14] = L"Version 0.7.0";
 static const wchar_t COPYRIGHT[71] = L"(c) 2023-2026 Sora Arakawa and others. Licensed under the MIT License.";
 
 extern int soundHandle[16];

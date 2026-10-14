@@ -3,29 +3,57 @@
 #include "Common.h"
 #include "Control.h"
 
-Navi UpdateNotch(int key[256], int joypad[8], Navi navi, Train train, int soundHandleNotch1, int soundHandleNotch2, int soundHandleBrake) {
-	if (key[KEY_INPUT_LEFT] == 1 || joypad[PAD_LEFT] == 1) {
-		if (navi.cb > 0) {
-			navi.cb--;
-			PlaySoundMem(soundHandleNotch2, DX_PLAYTYPE_BACK);
+Navi UpdateNotch(int key[256], int joypad[8], int controller, Navi navi, Train train, int soundHandleNotch1, int soundHandleNotch2, int soundHandleBrake) {
+	if (controller == 2) {
+		int pad = GetJoypadInputState(DX_INPUT_KEY_PAD1);
+		int padX, padY;
+		GetJoypadAnalogInput(&padX, &padY, DX_INPUT_PAD1);
+		if (padY < -100) {
+			navi.cp = 0;
+			if (padY == -1000) { navi.cb = 9; }
+			if (padY == -961) { navi.cb = 8; }
+			if (padY == -852) { navi.cb = 7; }
+			if (padY == -750) { navi.cb = 6; }
+			if (padY == -641) { navi.cb = 5; }
+			if (padY == -531) { navi.cb = 4; }
+			if (padY == -430) { navi.cb = 3; }
+			if (padY == -320) { navi.cb = 2; }
+			if (padY == -211) { navi.cb = 1; }
+		} else if (padY > 100) {
+			navi.cb = 0;
+			if (padY == 239) { navi.cp = 1; }
+			if (padY == 429) { navi.cp = 2; }
+			if (padY == 612) { navi.cp = 3; }
+			if (padY == 802) { navi.cp = 4; }
+			if (padY == 1000) { navi.cp = 5; }
+		} else {
+			navi.cp = 0;
+			navi.cb = 0;
 		}
-	}
-	if (key[KEY_INPUT_RIGHT] == 1 || joypad[PAD_RIGHT] == 1) {
-		if (navi.cb < train.b + 1) {
-			navi.cb++;
-			PlaySoundMem(soundHandleNotch2, DX_PLAYTYPE_BACK);
+	} else {
+		if (key[KEY_INPUT_LEFT] == 1 || joypad[PAD_LEFT] == 1) {
+			if (navi.cb > 0) {
+				navi.cb--;
+				PlaySoundMem(soundHandleNotch2, DX_PLAYTYPE_BACK);
+			}
 		}
-	}
-	if (key[KEY_INPUT_UP] == 1 || joypad[PAD_UP] == 1) {
-		if (navi.cp > 0) {
-			navi.cp--;
-			PlaySoundMem(soundHandleNotch1, DX_PLAYTYPE_BACK);
+		if (key[KEY_INPUT_RIGHT] == 1 || joypad[PAD_RIGHT] == 1) {
+			if (navi.cb < train.b + 1) {
+				navi.cb++;
+				PlaySoundMem(soundHandleNotch2, DX_PLAYTYPE_BACK);
+			}
 		}
-	}
-	if (key[KEY_INPUT_DOWN] == 1 || joypad[PAD_DOWN] == 1) {
-		if (navi.cp < train.p) {
-			navi.cp++;
-			PlaySoundMem(soundHandleNotch1, DX_PLAYTYPE_BACK);
+		if (key[KEY_INPUT_UP] == 1 || joypad[PAD_UP] == 1) {
+			if (navi.cp > 0) {
+				navi.cp--;
+				PlaySoundMem(soundHandleNotch1, DX_PLAYTYPE_BACK);
+			}
+		}
+		if (key[KEY_INPUT_DOWN] == 1 || joypad[PAD_DOWN] == 1) {
+			if (navi.cp < train.p) {
+				navi.cp++;
+				PlaySoundMem(soundHandleNotch1, DX_PLAYTYPE_BACK);
+			}
 		}
 	}
 	if (navi.atc == 0) {
@@ -48,10 +76,10 @@ Navi UpdateNotch(int key[256], int joypad[8], Navi navi, Train train, int soundH
 			if (diff >= 10) {
 				navi.b = 7;
 				navi.p = 0;
-			} else if (diff < 10 && diff >= 3) {
+			} else if (diff < 5 && diff >= 1) {
 				navi.b = 5;
 				navi.p = 0;
-			} else if (diff < 3) {
+			} else if (diff < 1) {
 				navi.b = 3;
 				navi.p = 0;
 			}
@@ -66,29 +94,27 @@ Navi UpdateNotch(int key[256], int joypad[8], Navi navi, Train train, int soundH
 	return navi;
 }
 
-Navi UpdateSpeed(Navi navi, Train train, Fps fps, float gradient) {
+Navi UpdateSpeed(Navi navi, Train train, Fps fps, BrakePressure brakePressure, BrakePressure current, float gradient) {
 	if (navi.b >= 1) {
 		if (navi.speed >= 0.05) {
 			if (navi.b >= train.b + 1) {
-				navi.speed -= static_cast<double>(train.de) / fps.Get();
+				navi.speed -= (train.de * (brakePressure.out / 320.0) / fps.Get());
 			} else {
-				navi.speed -= train.dn * (static_cast<double>(train.bp[navi.b]) / train.bp[train.b]) / fps.Get();
+				if (current.in > 0) {
+					navi.speed -= train.dn * (static_cast<double>(train.bp[navi.b]) / train.bp[train.b]) / fps.Get();
+				}
+				navi.speed -= (train.dn * (brakePressure.out / train.bp[train.b]) / fps.Get());
 			}
 		} else {
 			navi.speed = 0;
 		}
 	}
-	if (navi.speed < train.max && navi.p >= 1) {
-		navi.speed += (train.a * (1.0 / train.p * navi.p) / fps.Get());
-	}
-	if (navi.speed >= 0.1 && navi.p == 0 && navi.b == 0) {
-		navi.speed -= 0.005;
+	if (navi.speed < train.max && current.out >= 10) {
+		navi.speed += (train.a * (current.out / 600.0) / fps.Get());
 	}
 	if (navi.speed >= 0.05) {
-		navi.speed -= gradient / 4;
-	}
-	if (navi.speed >= 80) {
-		navi.speed = 80;
+		navi.speed -= 0.005;
+		navi.speed -= static_cast<double>(gradient) / 3.5;
 	}
 	return navi;
 }
@@ -119,7 +145,7 @@ BrakePressure UpdateBrakePressure(BrakePressure brakePressure, Navi navi, Train 
 	brakePressure.vel += error * 0.008;
 	brakePressure.vel *= 0.78;
 	brakePressure.out += brakePressure.vel;
-	if (error <= -8 && abs(brakePressure.vel) > 0.5 && CheckSoundMem(soundHandleBrake) == 0) {
+	if (error <= -8 && abs(brakePressure.vel) > 0.5 && brakePressure.out >= train.bp[0] - 5 && CheckSoundMem(soundHandleBrake) == 0) {
 		PlaySoundMem(soundHandleBrake, DX_PLAYTYPE_BACK);
 	}
 	return brakePressure;
@@ -139,7 +165,14 @@ BrakePressure UpdateCurrent(BrakePressure current, Navi navi, Train train) {
 			current.count++;
 		}
 	} else if (navi.p >= 1) {
-		current.in = (1.0 / train.p) * navi.p * 600.0;
+		if (current.count >= 40) {
+			current.in = (1.0 / train.p) * navi.p * 600.0;
+		} else {
+			current.in = 0;
+		}
+		if (current.count < 40) {
+			current.count++;
+		}
 	} else {
 		current.in = 0;
 		current.count = 0;
