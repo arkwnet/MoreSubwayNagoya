@@ -76,10 +76,10 @@ Navi UpdateNotch(int key[256], int joypad[8], int controller, Navi navi, Train t
 			if (diff >= 10) {
 				navi.b = 7;
 				navi.p = 0;
-			} else if (diff < 10 && diff >= 3) {
+			} else if (diff < 5 && diff >= 1) {
 				navi.b = 5;
 				navi.p = 0;
-			} else if (diff < 3) {
+			} else if (diff < 1) {
 				navi.b = 3;
 				navi.p = 0;
 			}
@@ -94,29 +94,27 @@ Navi UpdateNotch(int key[256], int joypad[8], int controller, Navi navi, Train t
 	return navi;
 }
 
-Navi UpdateSpeed(Navi navi, Train train, Fps fps, float gradient) {
+Navi UpdateSpeed(Navi navi, Train train, Fps fps, BrakePressure brakePressure, BrakePressure current, float gradient) {
 	if (navi.b >= 1) {
 		if (navi.speed >= 0.05) {
 			if (navi.b >= train.b + 1) {
-				navi.speed -= static_cast<double>(train.de) / fps.Get();
+				navi.speed -= (train.de * (brakePressure.out / 320.0) / fps.Get());
 			} else {
-				navi.speed -= train.dn * (static_cast<double>(train.bp[navi.b]) / train.bp[train.b]) / fps.Get();
+				if (current.in > 0) {
+					navi.speed -= train.dn * (static_cast<double>(train.bp[navi.b]) / train.bp[train.b]) / fps.Get();
+				}
+				navi.speed -= (train.dn * (brakePressure.out / train.bp[train.b]) / fps.Get());
 			}
 		} else {
 			navi.speed = 0;
 		}
 	}
-	if (navi.speed < train.max && navi.p >= 1) {
-		navi.speed += (train.a * (1.0 / train.p * navi.p) / fps.Get());
-	}
-	if (navi.speed >= 0.1 && navi.p == 0 && navi.b == 0) {
-		navi.speed -= 0.005;
+	if (navi.speed < train.max && current.out >= 10) {
+		navi.speed += (train.a * (current.out / 600.0) / fps.Get());
 	}
 	if (navi.speed >= 0.05) {
-		navi.speed -= gradient / 4;
-	}
-	if (navi.speed >= 80) {
-		navi.speed = 80;
+		navi.speed -= 0.005;
+		navi.speed -= static_cast<double>(gradient) / 3.5;
 	}
 	return navi;
 }
@@ -147,7 +145,7 @@ BrakePressure UpdateBrakePressure(BrakePressure brakePressure, Navi navi, Train 
 	brakePressure.vel += error * 0.008;
 	brakePressure.vel *= 0.78;
 	brakePressure.out += brakePressure.vel;
-	if (error <= -8 && abs(brakePressure.vel) > 0.5 && CheckSoundMem(soundHandleBrake) == 0) {
+	if (error <= -8 && abs(brakePressure.vel) > 0.5 && brakePressure.out >= train.bp[0] - 5 && CheckSoundMem(soundHandleBrake) == 0) {
 		PlaySoundMem(soundHandleBrake, DX_PLAYTYPE_BACK);
 	}
 	return brakePressure;
@@ -167,7 +165,14 @@ BrakePressure UpdateCurrent(BrakePressure current, Navi navi, Train train) {
 			current.count++;
 		}
 	} else if (navi.p >= 1) {
-		current.in = (1.0 / train.p) * navi.p * 600.0;
+		if (current.count >= 40) {
+			current.in = (1.0 / train.p) * navi.p * 600.0;
+		} else {
+			current.in = 0;
+		}
+		if (current.count < 40) {
+			current.count++;
+		}
 	} else {
 		current.in = 0;
 		current.count = 0;
