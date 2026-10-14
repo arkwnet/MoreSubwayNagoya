@@ -1,4 +1,4 @@
-* {
+﻿* {
   margin: 0;
   padding: 0;
 }
@@ -120,11 +120,13 @@ body {
 }
 
 .contents .image {
+  padding-top: 10px;
   overflow: hidden;
 }
 
 .contents .image div {
   width: calc(100% / 3);
+  margin-top: -10px;
   padding: 10px;
   float: left;
   box-sizing: border-box;
