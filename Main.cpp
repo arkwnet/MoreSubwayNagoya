@@ -261,7 +261,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 				} else if (game.status == 1) {
 					SetDrawScreen(bufferHandle);
 					SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 255);
-					DrawGraph(0, 0, backgroundHandle[0], FALSE);
+					DrawGraph(0, 120, backgroundHandle[0], FALSE);
 					DrawInterfaceHeader(spriteHandle[3], spriteHandle[0]);
 					DrawRectGraph(105, 185, 15, 165, 1710, 130, spriteHandle[0], TRUE);
 					DrawRectGraph(105, 335, 15, 165, 1710, 130, spriteHandle[0], TRUE);
