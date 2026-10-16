@@ -93,6 +93,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	int mTunnelHandle[2][200];
 	int mPlatformHandle[2][200];
 	int mPlatformHandleBase[2];
+	int mObjectHandle[200];
 	static const int C_DISTANCE = sizeof(mRailHandle[0]) / sizeof(mRailHandle[0][0]);
 	const int mStopHandle = MV1LoadModel(L"Assets\\Model\\Sign\\Stop.mqo");
 	const int mRailHandleBase = MV1LoadModel(L"Assets\\Model\\Rail\\1067.mqo");
@@ -342,7 +343,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 				break;
 			case 100:
 				if (game.status == 0) {
+					game.submode = 0;
 					spriteHandle[0] = LoadGraph(L"Assets\\Image\\GameMap.png");
+					mObjectHandle[150] = MV1LoadModel(L"Assets\\Model\\Station\\Door\\Wall.mqo");
+					mObjectHandle[151] = MV1LoadModel(L"Assets\\Model\\Station\\Door\\Door.mqo");
 					rail = { 0.0f, 0.0f, 0.0f, 0.0f };
 					point = { 0.0f, 0.0f, 0.0f, 0.0f };
 					navi.speed = 0.0;
@@ -489,6 +493,23 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 							MV1SetPosition(mTunnelHandle[1][drawDistance - 745], GetPosition(rail.x, rail.y, rail.z, -rail.ay, rail.ax, 7.8f, 0.0f));
 							MV1SetRotationXYZ(mTunnelHandle[1][drawDistance - 745], VGet(-rail.ay, DX_PI_F + rail.ax, 0.0f));
 						}
+						if (drawDistance >= 758 && drawDistance <= 858) {
+							if ((drawDistance - 758) % 5 == 0) {
+								mObjectHandle[game.submode] = MV1DuplicateModel(mObjectHandle[150]);
+								mObjectHandle[game.submode + 1] = MV1DuplicateModel(mObjectHandle[150]);
+							}
+							if ((drawDistance - 758) % 5 == 2 || (drawDistance - 758) % 5 == 3) {
+								mObjectHandle[game.submode] = MV1DuplicateModel(mObjectHandle[151]);
+								mObjectHandle[game.submode + 1] = MV1DuplicateModel(mObjectHandle[151]);
+							}
+							if ((drawDistance - 758) % 5 == 0 || (drawDistance - 758) % 5 == 2 || (drawDistance - 758) % 5 == 3) {
+								MV1SetPosition(mObjectHandle[game.submode], GetPosition(rail.x, rail.y, rail.z, -rail.ay, rail.ax, 1.1f, -2.229f - 0.175f + 1.3f));
+								MV1SetRotationXYZ(mObjectHandle[game.submode], VGet(-rail.ay, rail.ax, 0.0f));
+								MV1SetPosition(mObjectHandle[game.submode + 1], GetPosition(rail.x, rail.y, rail.z, -rail.ay, rail.ax, 6.8f, -2.229f - 0.175f + 1.3f));
+								MV1SetRotationXYZ(mObjectHandle[game.submode + 1], VGet(-rail.ay, DX_PI_F + rail.ax, 0.0f));
+								game.submode += 2;
+							}
+						}
 						if (drawDistance >= 870 && drawDistance < 910) {
 							MV1SetPosition(mTunnelHandle[1][drawDistance - 745], GetPosition(rail.x, rail.y, rail.z, -rail.ay, rail.ax, 7.8f, 0.0f));
 							MV1SetRotationXYZ(mTunnelHandle[1][drawDistance - 745], VGet(-rail.ay, DX_PI_F + rail.ax, 0.0f));
@@ -504,6 +525,23 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 							mTunnelHandle[0][(drawDistance - drawStart) % C_DISTANCE] = MV1DuplicateModel(mStationHandleBase);
 							MV1SetPosition(mTunnelHandle[1][drawDistance - 2115], GetPosition(rail.x, rail.y, rail.z, -rail.ay, rail.ax, 7.7f, 0.0f));
 							MV1SetRotationXYZ(mTunnelHandle[1][drawDistance - 2115], VGet(-rail.ay, DX_PI_F + rail.ax, 0.0f));
+						}
+						if (drawDistance >= 2128 && drawDistance <= 2228) {
+							if ((drawDistance - 2128) % 5 == 0) {
+								mObjectHandle[game.submode] = MV1DuplicateModel(mObjectHandle[150]);
+								mObjectHandle[game.submode + 1] = MV1DuplicateModel(mObjectHandle[150]);
+							}
+							if ((drawDistance - 2128) % 5 == 2 || (drawDistance - 2128) % 5 == 3) {
+								mObjectHandle[game.submode] = MV1DuplicateModel(mObjectHandle[151]);
+								mObjectHandle[game.submode + 1] = MV1DuplicateModel(mObjectHandle[151]);
+							}
+							if ((drawDistance - 2128) % 5 == 0 || (drawDistance - 2128) % 5 == 2 || (drawDistance - 2128) % 5 == 3) {
+								MV1SetPosition(mObjectHandle[game.submode], GetPosition(rail.x, rail.y, rail.z, -rail.ay, rail.ax, 1.1f, -2.229f - 0.175f + 1.3f));
+								MV1SetRotationXYZ(mObjectHandle[game.submode], VGet(-rail.ay, rail.ax, 0.0f));
+								MV1SetPosition(mObjectHandle[game.submode + 1], GetPosition(rail.x, rail.y, rail.z, -rail.ay, rail.ax, 6.7f, -2.229f - 0.175f + 1.3f));
+								MV1SetRotationXYZ(mObjectHandle[game.submode + 1], VGet(-rail.ay, DX_PI_F + rail.ax, 0.0f));
+								game.submode += 2;
+							}
 						}
 						if (drawDistance >= 2240 && drawDistance < 2280) {
 							MV1SetPosition(mTunnelHandle[1][drawDistance - 2115], GetPosition(rail.x, rail.y, rail.z, -rail.ay, rail.ax, 7.7f, 0.0f));
@@ -592,7 +630,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 						navi.score = 0;
 					}
 					SetCameraPositionAndAngle(camera, -cameraAngle[1] + 0.35f, cameraAngle[0], 0.0f);
-					Draw3DRail(mRailHandle, mTunnelHandle, mPlatformHandle);
+					Draw3DRail(mRailHandle, mTunnelHandle, mPlatformHandle, mObjectHandle);
 					MV1DrawModel(mStopHandle);
 					navi = UpdateNotch(key, joypad, savedata[1][1], navi, train, soundHandle[4], soundHandle[5], soundHandle[1]);
 					navi = UpdateSpeed(navi, train, fps, brakePressure, current, cameraAngle[1]);
@@ -604,7 +642,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 					DrawFillBox(0, 0, screenWidth, screenHeight, COLOR_BLACK);
 					SetCameraNearFar(0.1f, 1000.0f);
 					SetCameraPositionAndAngle(camera, -cameraAngle[1] + 0.35f, cameraAngle[0], 0.0f);
-					Draw3DRail(mRailHandle, mTunnelHandle, mPlatformHandle);
+					Draw3DRail(mRailHandle, mTunnelHandle, mPlatformHandle, mObjectHandle);
 					MV1DrawModel(mStopHandle);
 					DrawCab(bufferHandle, backgroundHandle[1], spriteHandle[0], spriteHandle[1], spriteHandle[2], navi, train, brakePressure.out, current.out);
 					DrawExtendGraph(0, 0, screenWidth, screenHeight, bufferHandle, TRUE);
@@ -642,6 +680,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 					DeleteObject(mRailHandle[j][i]);
 					DeleteObject(mPlatformHandle[j][i]);
 				}
+				DeleteObject(mObjectHandle[i]);
 			}
 			mclean = false;
 		}
