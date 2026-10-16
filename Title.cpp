@@ -3,6 +3,7 @@
 
 void DrawArakawaLogo(Game game, int backgroundHandle, int screenWidth, int screenHeight) {
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+	DrawFillBox(0, 0, screenWidth, screenHeight, COLOR_BLACK);
 	if (game.count >= 60 && game.count < 90) {
 		SetDrawBlendMode(DX_BLENDMODE_ALPHA, (game.count - 60) * (255 / 30));
 	}

@@ -80,6 +80,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	}
 
 	int bufferHandle = MakeScreen(BUFFER_WIDTH, BUFFER_HEIGHT, TRUE);
+	int copyHandle = MakeScreen(screenWidth, screenHeight, FALSE);
 	int backgroundHandle[2];
 	backgroundHandle[1] = LoadGraph(L"Assets\\Image\\Cab.png");
 	int spriteHandle[16];
@@ -132,7 +133,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	while (ProcessMessage() == 0 && status == true) {
 		fps.Update();
-		ClearDrawScreen();
 		GetKey(key);
 		GetJoypad(joypad, isJoypad);
 		switch (game.mode) {
@@ -266,17 +266,17 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 					DrawInterfaceHeader(spriteHandle[3], spriteHandle[0]);
 					DrawRectGraph(105, 185, 15, 165, 1710, 130, spriteHandle[0], TRUE);
 					DrawRectGraph(105, 335, 15, 165, 1710, 130, spriteHandle[0], TRUE);
-					// DrawRectGraph(105, 485, 15, 165, 1710, 130, spriteHandle[0], TRUE);
+					DrawRectGraph(105, 485, 15, 165, 1710, 130, spriteHandle[0], TRUE);
 					DrawRectGraph(102, 150 * game.submode + 182, 12, 302, 1716, 136, spriteHandle[0], TRUE);
 					DrawRectGraph(120, 200, 30, 450, 1680, 100, spriteHandle[0], TRUE);
 					DrawRectGraph(120, 350, 30, 450, 1680, 100, spriteHandle[0], TRUE);
-					// DrawRectGraph(120, 500, 30, 450, 1680, 100, spriteHandle[0], TRUE);
+					DrawRectGraph(120, 500, 30, 450, 1680, 100, spriteHandle[0], TRUE);
 					DrawRectGraph(150, 215, 20, 565, 600, 70, spriteHandle[0], TRUE);
 					DrawRectGraph(150, 365, 20, 635, 600, 70, spriteHandle[0], TRUE);
-					// DrawRectGraph(150, 515, 20, 705, 600, 70, spriteHandle[0], TRUE);
+					DrawRectGraph(150, 515, 20, 705, 600, 70, spriteHandle[0], TRUE);
 					DrawRectGraph(1077, 213, 675, savedata[1][0] * 70 + 563, 495, 70, spriteHandle[0], TRUE);
 					DrawRectGraph(1045, 363, 1195, savedata[1][1] * 70 + 563, 560, 70, spriteHandle[0], TRUE);
-					// DrawRectGraph(1045, 513, 1195, savedata[1][2] * 70 + 773, 560, 70, spriteHandle[0], TRUE);
+					DrawRectGraph(1045, 513, 1195, savedata[1][2] * 70 + 773, 560, 70, spriteHandle[0], TRUE);
 					DrawInterfaceFooter(spriteHandle[3], savedata[1][1]);
 					SetDrawScreen(DX_SCREEN_BACK);
 					game.status = 2;
@@ -289,7 +289,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 						}
 					}
 					if (key[KEY_INPUT_DOWN] == 1 || joypad[PAD_DOWN] == 1) {
-						if (game.submode < 1) {
+						if (game.submode < 2) {
 							PlaySoundMem(soundHandle[5], DX_PLAYTYPE_BACK);
 							game.submode++;
 							game.status = 1;
@@ -439,7 +439,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 					ChangeVolumeSoundMem(0, soundHandle[3]);
 					game.status = 1;
 				} else if (game.status == 1) {
-					DrawFillBox(0, 0, screenWidth, screenHeight, COLOR_BLACK);
 					ControlVVVFSound(soundHandle[0], navi, current.out);
 					ControlBrakeSound(soundHandle[2], navi);
 					ControlTunnelSound(soundHandle[3], navi);
@@ -630,22 +629,34 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 						navi.score = 0;
 					}
 					SetCameraPositionAndAngle(camera, -cameraAngle[1] + 0.35f, cameraAngle[0], 0.0f);
-					Draw3DRail(mRailHandle, mTunnelHandle, mPlatformHandle, mObjectHandle);
-					MV1DrawModel(mStopHandle);
 					navi = UpdateNotch(key, joypad, savedata[1][1], navi, train, soundHandle[4], soundHandle[5], soundHandle[1]);
 					navi = UpdateSpeed(navi, train, fps, brakePressure, current, cameraAngle[1]);
 					brakePressure = UpdateBrakePressure(brakePressure, navi, train, soundHandle[1]);
 					current = UpdateCurrent(current, navi, train);
-					DrawCab(bufferHandle, backgroundHandle[1], spriteHandle[0], spriteHandle[1], spriteHandle[2], navi, train, brakePressure.out, current.out);
-					DrawExtendGraph(0, 0, screenWidth, screenHeight, bufferHandle, TRUE);
+					if (savedata[1][2] == 0 || (savedata[1][2] == 1 && game.clock % 2 == 0)) {
+						ClearDrawScreenZBuffer();
+						DrawFillBox(0, 0, screenWidth, screenHeight, COLOR_BLACK);
+						Draw3DRail(mRailHandle, mTunnelHandle, mPlatformHandle, mObjectHandle);
+						MV1DrawModel(mStopHandle);
+						DrawCab(bufferHandle, backgroundHandle[1], spriteHandle[0], spriteHandle[1], spriteHandle[2], navi, train, brakePressure.out, current.out);
+						DrawExtendGraph(0, 0, screenWidth, screenHeight, bufferHandle, TRUE);
+						GetDrawScreenGraph(0, 0, screenWidth, screenHeight, copyHandle);
+					} else {
+						DrawGraph(0, 0, copyHandle, FALSE);
+					}
 				} else if (game.status == 2) {
-					DrawFillBox(0, 0, screenWidth, screenHeight, COLOR_BLACK);
 					SetCameraNearFar(0.1f, 1000.0f);
 					SetCameraPositionAndAngle(camera, -cameraAngle[1] + 0.35f, cameraAngle[0], 0.0f);
-					Draw3DRail(mRailHandle, mTunnelHandle, mPlatformHandle, mObjectHandle);
-					MV1DrawModel(mStopHandle);
-					DrawCab(bufferHandle, backgroundHandle[1], spriteHandle[0], spriteHandle[1], spriteHandle[2], navi, train, brakePressure.out, current.out);
-					DrawExtendGraph(0, 0, screenWidth, screenHeight, bufferHandle, TRUE);
+					if (savedata[1][2] == 0 || (savedata[1][2] == 1 && game.clock % 2 == 0)) {
+						DrawFillBox(0, 0, screenWidth, screenHeight, COLOR_BLACK);
+						Draw3DRail(mRailHandle, mTunnelHandle, mPlatformHandle, mObjectHandle);
+						MV1DrawModel(mStopHandle);
+						DrawCab(bufferHandle, backgroundHandle[1], spriteHandle[0], spriteHandle[1], spriteHandle[2], navi, train, brakePressure.out, current.out);
+						DrawExtendGraph(0, 0, screenWidth, screenHeight, bufferHandle, TRUE);
+						GetDrawScreenGraph(0, 0, screenWidth, screenHeight, copyHandle);
+					} else {
+						DrawGraph(0, 0, copyHandle, FALSE);
+					}
 					if (game.count == 60) {
 						PlaySoundMem(soundHandle[10], DX_PLAYTYPE_BACK);
 						StopSoundMem(soundHandle[0]);
