@@ -80,6 +80,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	}
 
 	int bufferHandle = MakeScreen(BUFFER_WIDTH, BUFFER_HEIGHT, TRUE);
+	int copyHandle = MakeScreen(screenWidth, screenHeight, FALSE);
 	int backgroundHandle[2];
 	backgroundHandle[1] = LoadGraph(L"Assets\\Image\\Cab.png");
 	int spriteHandle[16];
@@ -93,6 +94,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	int mTunnelHandle[2][200];
 	int mPlatformHandle[2][200];
 	int mPlatformHandleBase[2];
+	int mObjectHandle[200];
 	static const int C_DISTANCE = sizeof(mRailHandle[0]) / sizeof(mRailHandle[0][0]);
 	const int mStopHandle = MV1LoadModel(L"Assets\\Model\\Sign\\Stop.mqo");
 	const int mRailHandleBase = MV1LoadModel(L"Assets\\Model\\Rail\\1067.mqo");
@@ -131,7 +133,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	while (ProcessMessage() == 0 && status == true) {
 		fps.Update();
-		ClearDrawScreen();
 		GetKey(key);
 		GetJoypad(joypad, isJoypad);
 		switch (game.mode) {
@@ -265,17 +266,17 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 					DrawInterfaceHeader(spriteHandle[3], spriteHandle[0]);
 					DrawRectGraph(105, 185, 15, 165, 1710, 130, spriteHandle[0], TRUE);
 					DrawRectGraph(105, 335, 15, 165, 1710, 130, spriteHandle[0], TRUE);
-					// DrawRectGraph(105, 485, 15, 165, 1710, 130, spriteHandle[0], TRUE);
+					DrawRectGraph(105, 485, 15, 165, 1710, 130, spriteHandle[0], TRUE);
 					DrawRectGraph(102, 150 * game.submode + 182, 12, 302, 1716, 136, spriteHandle[0], TRUE);
 					DrawRectGraph(120, 200, 30, 450, 1680, 100, spriteHandle[0], TRUE);
 					DrawRectGraph(120, 350, 30, 450, 1680, 100, spriteHandle[0], TRUE);
-					// DrawRectGraph(120, 500, 30, 450, 1680, 100, spriteHandle[0], TRUE);
+					DrawRectGraph(120, 500, 30, 450, 1680, 100, spriteHandle[0], TRUE);
 					DrawRectGraph(150, 215, 20, 565, 600, 70, spriteHandle[0], TRUE);
 					DrawRectGraph(150, 365, 20, 635, 600, 70, spriteHandle[0], TRUE);
-					// DrawRectGraph(150, 515, 20, 705, 600, 70, spriteHandle[0], TRUE);
+					DrawRectGraph(150, 515, 20, 705, 600, 70, spriteHandle[0], TRUE);
 					DrawRectGraph(1077, 213, 675, savedata[1][0] * 70 + 563, 495, 70, spriteHandle[0], TRUE);
 					DrawRectGraph(1045, 363, 1195, savedata[1][1] * 70 + 563, 560, 70, spriteHandle[0], TRUE);
-					// DrawRectGraph(1045, 513, 1195, savedata[1][2] * 70 + 773, 560, 70, spriteHandle[0], TRUE);
+					DrawRectGraph(1045, 513, 1195, savedata[1][2] * 70 + 773, 560, 70, spriteHandle[0], TRUE);
 					DrawInterfaceFooter(spriteHandle[3], savedata[1][1]);
 					SetDrawScreen(DX_SCREEN_BACK);
 					game.status = 2;
@@ -288,7 +289,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 						}
 					}
 					if (key[KEY_INPUT_DOWN] == 1 || joypad[PAD_DOWN] == 1) {
-						if (game.submode < 1) {
+						if (game.submode < 2) {
 							PlaySoundMem(soundHandle[5], DX_PLAYTYPE_BACK);
 							game.submode++;
 							game.status = 1;
@@ -342,7 +343,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 				break;
 			case 100:
 				if (game.status == 0) {
+					game.submode = 0;
 					spriteHandle[0] = LoadGraph(L"Assets\\Image\\GameMap.png");
+					mObjectHandle[150] = MV1LoadModel(L"Assets\\Model\\Station\\Door\\Wall.mqo");
+					mObjectHandle[151] = MV1LoadModel(L"Assets\\Model\\Station\\Door\\Door.mqo");
 					rail = { 0.0f, 0.0f, 0.0f, 0.0f };
 					point = { 0.0f, 0.0f, 0.0f, 0.0f };
 					navi.speed = 0.0;
@@ -435,7 +439,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 					ChangeVolumeSoundMem(0, soundHandle[3]);
 					game.status = 1;
 				} else if (game.status == 1) {
-					DrawFillBox(0, 0, screenWidth, screenHeight, COLOR_BLACK);
 					ControlVVVFSound(soundHandle[0], navi, current.out);
 					ControlBrakeSound(soundHandle[2], navi);
 					ControlTunnelSound(soundHandle[3], navi);
@@ -489,6 +492,23 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 							MV1SetPosition(mTunnelHandle[1][drawDistance - 745], GetPosition(rail.x, rail.y, rail.z, -rail.ay, rail.ax, 7.8f, 0.0f));
 							MV1SetRotationXYZ(mTunnelHandle[1][drawDistance - 745], VGet(-rail.ay, DX_PI_F + rail.ax, 0.0f));
 						}
+						if (drawDistance >= 758 && drawDistance <= 858) {
+							if ((drawDistance - 758) % 5 == 0) {
+								mObjectHandle[game.submode] = MV1DuplicateModel(mObjectHandle[150]);
+								mObjectHandle[game.submode + 1] = MV1DuplicateModel(mObjectHandle[150]);
+							}
+							if ((drawDistance - 758) % 5 == 2 || (drawDistance - 758) % 5 == 3) {
+								mObjectHandle[game.submode] = MV1DuplicateModel(mObjectHandle[151]);
+								mObjectHandle[game.submode + 1] = MV1DuplicateModel(mObjectHandle[151]);
+							}
+							if ((drawDistance - 758) % 5 == 0 || (drawDistance - 758) % 5 == 2 || (drawDistance - 758) % 5 == 3) {
+								MV1SetPosition(mObjectHandle[game.submode], GetPosition(rail.x, rail.y, rail.z, -rail.ay, rail.ax, 1.1f, -2.229f - 0.175f + 1.3f));
+								MV1SetRotationXYZ(mObjectHandle[game.submode], VGet(-rail.ay, rail.ax, 0.0f));
+								MV1SetPosition(mObjectHandle[game.submode + 1], GetPosition(rail.x, rail.y, rail.z, -rail.ay, rail.ax, 6.8f, -2.229f - 0.175f + 1.3f));
+								MV1SetRotationXYZ(mObjectHandle[game.submode + 1], VGet(-rail.ay, DX_PI_F + rail.ax, 0.0f));
+								game.submode += 2;
+							}
+						}
 						if (drawDistance >= 870 && drawDistance < 910) {
 							MV1SetPosition(mTunnelHandle[1][drawDistance - 745], GetPosition(rail.x, rail.y, rail.z, -rail.ay, rail.ax, 7.8f, 0.0f));
 							MV1SetRotationXYZ(mTunnelHandle[1][drawDistance - 745], VGet(-rail.ay, DX_PI_F + rail.ax, 0.0f));
@@ -504,6 +524,23 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 							mTunnelHandle[0][(drawDistance - drawStart) % C_DISTANCE] = MV1DuplicateModel(mStationHandleBase);
 							MV1SetPosition(mTunnelHandle[1][drawDistance - 2115], GetPosition(rail.x, rail.y, rail.z, -rail.ay, rail.ax, 7.7f, 0.0f));
 							MV1SetRotationXYZ(mTunnelHandle[1][drawDistance - 2115], VGet(-rail.ay, DX_PI_F + rail.ax, 0.0f));
+						}
+						if (drawDistance >= 2128 && drawDistance <= 2228) {
+							if ((drawDistance - 2128) % 5 == 0) {
+								mObjectHandle[game.submode] = MV1DuplicateModel(mObjectHandle[150]);
+								mObjectHandle[game.submode + 1] = MV1DuplicateModel(mObjectHandle[150]);
+							}
+							if ((drawDistance - 2128) % 5 == 2 || (drawDistance - 2128) % 5 == 3) {
+								mObjectHandle[game.submode] = MV1DuplicateModel(mObjectHandle[151]);
+								mObjectHandle[game.submode + 1] = MV1DuplicateModel(mObjectHandle[151]);
+							}
+							if ((drawDistance - 2128) % 5 == 0 || (drawDistance - 2128) % 5 == 2 || (drawDistance - 2128) % 5 == 3) {
+								MV1SetPosition(mObjectHandle[game.submode], GetPosition(rail.x, rail.y, rail.z, -rail.ay, rail.ax, 1.1f, -2.229f - 0.175f + 1.3f));
+								MV1SetRotationXYZ(mObjectHandle[game.submode], VGet(-rail.ay, rail.ax, 0.0f));
+								MV1SetPosition(mObjectHandle[game.submode + 1], GetPosition(rail.x, rail.y, rail.z, -rail.ay, rail.ax, 6.7f, -2.229f - 0.175f + 1.3f));
+								MV1SetRotationXYZ(mObjectHandle[game.submode + 1], VGet(-rail.ay, DX_PI_F + rail.ax, 0.0f));
+								game.submode += 2;
+							}
 						}
 						if (drawDistance >= 2240 && drawDistance < 2280) {
 							MV1SetPosition(mTunnelHandle[1][drawDistance - 2115], GetPosition(rail.x, rail.y, rail.z, -rail.ay, rail.ax, 7.7f, 0.0f));
@@ -592,22 +629,34 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 						navi.score = 0;
 					}
 					SetCameraPositionAndAngle(camera, -cameraAngle[1] + 0.35f, cameraAngle[0], 0.0f);
-					Draw3DRail(mRailHandle, mTunnelHandle, mPlatformHandle);
-					MV1DrawModel(mStopHandle);
 					navi = UpdateNotch(key, joypad, savedata[1][1], navi, train, soundHandle[4], soundHandle[5], soundHandle[1]);
 					navi = UpdateSpeed(navi, train, fps, brakePressure, current, cameraAngle[1]);
 					brakePressure = UpdateBrakePressure(brakePressure, navi, train, soundHandle[1]);
 					current = UpdateCurrent(current, navi, train);
-					DrawCab(bufferHandle, backgroundHandle[1], spriteHandle[0], spriteHandle[1], spriteHandle[2], navi, train, brakePressure.out, current.out);
-					DrawExtendGraph(0, 0, screenWidth, screenHeight, bufferHandle, TRUE);
+					if (savedata[1][2] == 0 || (savedata[1][2] == 1 && game.clock % 2 == 0)) {
+						ClearDrawScreenZBuffer();
+						DrawFillBox(0, 0, screenWidth, screenHeight, COLOR_BLACK);
+						Draw3DRail(mRailHandle, mTunnelHandle, mPlatformHandle, mObjectHandle);
+						MV1DrawModel(mStopHandle);
+						DrawCab(bufferHandle, backgroundHandle[1], spriteHandle[0], spriteHandle[1], spriteHandle[2], navi, train, brakePressure.out, current.out);
+						DrawExtendGraph(0, 0, screenWidth, screenHeight, bufferHandle, TRUE);
+						GetDrawScreenGraph(0, 0, screenWidth, screenHeight, copyHandle);
+					} else {
+						DrawGraph(0, 0, copyHandle, FALSE);
+					}
 				} else if (game.status == 2) {
-					DrawFillBox(0, 0, screenWidth, screenHeight, COLOR_BLACK);
 					SetCameraNearFar(0.1f, 1000.0f);
 					SetCameraPositionAndAngle(camera, -cameraAngle[1] + 0.35f, cameraAngle[0], 0.0f);
-					Draw3DRail(mRailHandle, mTunnelHandle, mPlatformHandle);
-					MV1DrawModel(mStopHandle);
-					DrawCab(bufferHandle, backgroundHandle[1], spriteHandle[0], spriteHandle[1], spriteHandle[2], navi, train, brakePressure.out, current.out);
-					DrawExtendGraph(0, 0, screenWidth, screenHeight, bufferHandle, TRUE);
+					if (savedata[1][2] == 0 || (savedata[1][2] == 1 && game.clock % 2 == 0)) {
+						DrawFillBox(0, 0, screenWidth, screenHeight, COLOR_BLACK);
+						Draw3DRail(mRailHandle, mTunnelHandle, mPlatformHandle, mObjectHandle);
+						MV1DrawModel(mStopHandle);
+						DrawCab(bufferHandle, backgroundHandle[1], spriteHandle[0], spriteHandle[1], spriteHandle[2], navi, train, brakePressure.out, current.out);
+						DrawExtendGraph(0, 0, screenWidth, screenHeight, bufferHandle, TRUE);
+						GetDrawScreenGraph(0, 0, screenWidth, screenHeight, copyHandle);
+					} else {
+						DrawGraph(0, 0, copyHandle, FALSE);
+					}
 					if (game.count == 60) {
 						PlaySoundMem(soundHandle[10], DX_PLAYTYPE_BACK);
 						StopSoundMem(soundHandle[0]);
@@ -642,6 +691,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 					DeleteObject(mRailHandle[j][i]);
 					DeleteObject(mPlatformHandle[j][i]);
 				}
+				DeleteObject(mObjectHandle[i]);
 			}
 			mclean = false;
 		}
