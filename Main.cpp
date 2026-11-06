@@ -640,9 +640,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 						MV1DrawModel(mStopHandle);
 						DrawCab(bufferHandle, backgroundHandle[1], spriteHandle[0], spriteHandle[1], spriteHandle[2], navi, train, brakePressure.out, current.out);
 						DrawExtendGraph(0, 0, screenWidth, screenHeight, bufferHandle, TRUE);
-						GetDrawScreenGraph(0, 0, screenWidth, screenHeight, copyHandle);
-					} else {
-						DrawGraph(0, 0, copyHandle, FALSE);
 					}
 				} else if (game.status == 2) {
 					SetCameraNearFar(0.1f, 1000.0f);
