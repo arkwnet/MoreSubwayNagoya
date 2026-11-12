@@ -347,6 +347,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 					spriteHandle[0] = LoadGraph(L"Assets\\Image\\GameMap.png");
 					mObjectHandle[150] = MV1LoadModel(L"Assets\\Model\\Station\\Door\\Wall.mqo");
 					mObjectHandle[151] = MV1LoadModel(L"Assets\\Model\\Station\\Door\\Door.mqo");
+					mObjectHandle[152] = MV1LoadModel(L"Assets\\Model\\Station\\Platform\\LED1.mqo");
+					mObjectHandle[153] = MV1LoadModel(L"Assets\\Model\\Station\\Platform\\LED2.mqo");
 					rail = { 0.0f, 0.0f, 0.0f, 0.0f };
 					point = { 0.0f, 0.0f, 0.0f, 0.0f };
 					navi.speed = 0.0;
@@ -508,6 +510,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 								MV1SetRotationXYZ(mObjectHandle[game.submode + 1], VGet(-rail.ay, DX_PI_F + rail.ax, 0.0f));
 								game.submode += 2;
 							}
+						}
+						if (drawDistance == 778 || drawDistance == 838 || drawDistance == 2138 || drawDistance == 2208) {
+							mObjectHandle[game.submode] = MV1DuplicateModel(mObjectHandle[152]);
+							MV1SetPosition(mObjectHandle[game.submode], GetPosition(rail.x, rail.y, rail.z, -rail.ay, rail.ax, 1.9f, 1.5f));
+							MV1SetRotationXYZ(mObjectHandle[game.submode], VGet(-rail.ay, rail.ax, 0.0f));
+							mObjectHandle[game.submode + 1] = MV1DuplicateModel(mObjectHandle[153]);
+							MV1SetPosition(mObjectHandle[game.submode + 1], GetPosition(rail.x, rail.y, rail.z, -rail.ay, rail.ax, 5.4f, 1.5f));
+							MV1SetRotationXYZ(mObjectHandle[game.submode + 1], VGet(-rail.ay, rail.ax, 0.0f));
+							game.submode += 2;
 						}
 						if (drawDistance >= 870 && drawDistance < 910) {
 							MV1SetPosition(mTunnelHandle[1][drawDistance - 745], GetPosition(rail.x, rail.y, rail.z, -rail.ay, rail.ax, 7.8f, 0.0f));
