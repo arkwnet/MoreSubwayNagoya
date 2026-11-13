@@ -106,7 +106,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	int padNum = GetJoypadNum();
 	if (padNum >= 1) {
 		isJoypad = true;
-		SetJoypadDeadZone(DX_INPUT_PAD1, 0.0);
 	} else {
 		savedata[1][1] = 0;
 	}
@@ -347,6 +346,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 					spriteHandle[0] = LoadGraph(L"Assets\\Image\\GameMap.png");
 					mObjectHandle[150] = MV1LoadModel(L"Assets\\Model\\Station\\Door\\Wall.mqo");
 					mObjectHandle[151] = MV1LoadModel(L"Assets\\Model\\Station\\Door\\Door.mqo");
+					mObjectHandle[152] = MV1LoadModel(L"Assets\\Model\\Station\\Platform\\LED1.mqo");
+					mObjectHandle[153] = MV1LoadModel(L"Assets\\Model\\Station\\Platform\\LED2.mqo");
 					rail = { 0.0f, 0.0f, 0.0f, 0.0f };
 					point = { 0.0f, 0.0f, 0.0f, 0.0f };
 					navi.speed = 0.0;
@@ -437,6 +438,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 					ChangeVolumeSoundMem(0, soundHandle[2]);
 					PlaySoundMem(soundHandle[3], DX_PLAYTYPE_LOOP);
 					ChangeVolumeSoundMem(0, soundHandle[3]);
+					if (savedata[1][1] == 2) {
+						SetJoypadDeadZone(DX_INPUT_PAD1, 0.0);
+					}
 					game.status = 1;
 				} else if (game.status == 1) {
 					ControlVVVFSound(soundHandle[0], navi, current.out);
@@ -508,6 +512,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 								MV1SetRotationXYZ(mObjectHandle[game.submode + 1], VGet(-rail.ay, DX_PI_F + rail.ax, 0.0f));
 								game.submode += 2;
 							}
+						}
+						if (drawDistance == 778 || drawDistance == 838 || drawDistance == 2138 || drawDistance == 2208) {
+							mObjectHandle[game.submode] = MV1DuplicateModel(mObjectHandle[152]);
+							MV1SetPosition(mObjectHandle[game.submode], GetPosition(rail.x, rail.y, rail.z, -rail.ay, rail.ax, 1.9f, 1.5f));
+							MV1SetRotationXYZ(mObjectHandle[game.submode], VGet(-rail.ay, rail.ax, 0.0f));
+							mObjectHandle[game.submode + 1] = MV1DuplicateModel(mObjectHandle[153]);
+							MV1SetPosition(mObjectHandle[game.submode + 1], GetPosition(rail.x, rail.y, rail.z, -rail.ay, rail.ax, 5.4f, 1.5f));
+							MV1SetRotationXYZ(mObjectHandle[game.submode + 1], VGet(-rail.ay, rail.ax, 0.0f));
+							game.submode += 2;
 						}
 						if (drawDistance >= 870 && drawDistance < 910) {
 							MV1SetPosition(mTunnelHandle[1][drawDistance - 745], GetPosition(rail.x, rail.y, rail.z, -rail.ay, rail.ax, 7.8f, 0.0f));
@@ -640,9 +653,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 						MV1DrawModel(mStopHandle);
 						DrawCab(bufferHandle, backgroundHandle[1], spriteHandle[0], spriteHandle[1], spriteHandle[2], navi, train, brakePressure.out, current.out);
 						DrawExtendGraph(0, 0, screenWidth, screenHeight, bufferHandle, TRUE);
-						GetDrawScreenGraph(0, 0, screenWidth, screenHeight, copyHandle);
-					} else {
-						DrawGraph(0, 0, copyHandle, FALSE);
 					}
 				} else if (game.status == 2) {
 					SetCameraNearFar(0.1f, 1000.0f);
