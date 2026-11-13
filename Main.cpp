@@ -106,7 +106,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	int padNum = GetJoypadNum();
 	if (padNum >= 1) {
 		isJoypad = true;
-		SetJoypadDeadZone(DX_INPUT_PAD1, 0.0);
 	} else {
 		savedata[1][1] = 0;
 	}
@@ -439,6 +438,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 					ChangeVolumeSoundMem(0, soundHandle[2]);
 					PlaySoundMem(soundHandle[3], DX_PLAYTYPE_LOOP);
 					ChangeVolumeSoundMem(0, soundHandle[3]);
+					if (savedata[1][1] == 2) {
+						SetJoypadDeadZone(DX_INPUT_PAD1, 0.0);
+					}
 					game.status = 1;
 				} else if (game.status == 1) {
 					ControlVVVFSound(soundHandle[0], navi, current.out);
